@@ -17,19 +17,19 @@ public class LoginPage {
 
 	// ================= LOCATORS =================
 
-	@FindBy(name = "email")
+	@FindBy(css = "[data-testid='login-email']")
 	WebElement txtEmail;
 
-	@FindBy(name = "password")
+	@FindBy(css = "[data-testid='login-password']")
 	WebElement txtPassword;
 
-	@FindBy(xpath = "//button[@type='submit']")
+	@FindBy(css = "[data-testid='login-submit']")
 	WebElement btnLogin;
 
-	@FindBy(xpath = "//button[contains(@class,'text-medical-muted')]")
+	@FindBy(css = "[data-testid='login-toggle-password']")
 	WebElement btnTogglePassword;
 
-	@FindBy(xpath = "//*[contains(@class,'text-red')]")
+	@FindBy(css = "[data-testid='login-error']")
 	WebElement errorMessage;
 
 	// ================= ACTION METHODS =================

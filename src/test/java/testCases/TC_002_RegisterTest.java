@@ -19,6 +19,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		String uniqueEmail = "user" + System.currentTimeMillis() + "@gmail.com";
@@ -30,26 +31,14 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("Step 1 completed");
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
-
 		rp.enterAge("25");
-		rp.selectGender("//*[@data-testid='gender-option-Male']");
-		rp.selectBloodGroup("//*[@data-testid='bloodgroup-option-O+']");
+		rp.selectGender("Male");
+		rp.selectBloodGroup("O+");
 		rp.clickCreateAccount();
 
 		logInfo("Registration submitted");
 
-		try {
-			Thread.sleep(3000);
-		} catch (Exception e) {
-		}
-
-		String url = driver.getCurrentUrl();
-
-		Assert.assertFalse(url.contains("register"), "User should NOT stay on register page after valid signup");
+		Assert.assertFalse(waitForUrlContains("register", 10), "User should not stay on register page after valid signup");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -64,6 +53,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		rp.enterName("Test User");
@@ -71,14 +61,8 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Invalid email should not proceed to next step");
 
-		String url = driver.getCurrentUrl();
-
-		Assert.assertTrue(url.contains("register"), "Invalid email should not proceed to next step");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -93,6 +77,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		rp.enterName("Test User");
@@ -100,14 +85,8 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("123"); // weak password
 		rp.clickContinue();
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Weak password should not allow step completion");
 
-		String url = driver.getCurrentUrl();
-
-		Assert.assertTrue(url.contains("register"), "Weak password should not allow step completion");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -122,6 +101,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		rp.enterName("");
@@ -129,14 +109,8 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("");
 		rp.clickContinue();
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Empty fields should not proceed");
 
-		String url = driver.getCurrentUrl();
-
-		Assert.assertTrue(url.contains("register"), "Empty fields should not proceed");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -151,6 +125,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		rp.enterName("123456"); // invalid name
@@ -158,14 +133,8 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Numeric-only name should be rejected");
 
-		String url = driver.getCurrentUrl();
-
-		Assert.assertTrue(url.contains("register"), "Numeric-only name should be rejected");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -180,6 +149,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		rp.enterName("A"); // too short
@@ -187,14 +157,8 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Short name should not be accepted");
 
-		String url = driver.getCurrentUrl();
-
-		Assert.assertTrue(url.contains("register"), "Short name should not be accepted");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -209,6 +173,7 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("TEST STARTED: " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
 		String uniqueEmail = "skip" + System.currentTimeMillis() + "@gmail.com";
@@ -218,24 +183,98 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
-
 		logInfo("Skipping profile setup (if allowed by UI)");
 
 		rp.clickCreateAccount(); // directly skip optional fields
 
-		try {
-			Thread.sleep(3000);
-		} catch (Exception e) {
-		}
-
-		String url = driver.getCurrentUrl();
-
-		Assert.assertFalse(url.contains("register"), "User should complete registration even after skipping profile");
+		Assert.assertFalse(waitForUrlContains("register", 10), "User should complete registration even after skipping profile");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
+	// ==============================
+// TC_009 - SQL INJECTION IN NAME
+// ==============================
+@Test(groups = { "regression" })
+public void TC_009_Register_SQLInjection_Name() {
+
+    String testCase = "TC_009_Register_SQLInjection_Name";
+
+    logInfo("TEST STARTED: " + testCase);
+
+    driver.get(p.getProperty("appURL") + "/register");
+    rp = new RegisterPage(driver);
+
+    rp.enterName("' OR '1'='1");
+    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
+    rp.enterPassword("Test@12345");
+    rp.clickContinue();
+
+    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "SQL payload in name should be rejected");
+    Assert.assertTrue(rp.getNameError().length() > 0, "Expected name error message for SQL payload");
+
+    logInfo("TEST PASSED: " + testCase);
+}
+
+// ==============================
+// TC_010 - WEIRD NAME: DASH AND NUMERIC
+// ==============================
+@Test(groups = { "regression" })
+public void TC_010_Register_WeirdName_DashNumber() {
+
+    String testCase = "TC_010_Register_WeirdName_DashNumber";
+
+    logInfo("TEST STARTED: " + testCase);
+
+    driver.get(p.getProperty("appURL") + "/register");
+    rp = new RegisterPage(driver);
+
+    rp.enterName("-1");
+    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
+    rp.enterPassword("Test@12345");
+    rp.clickContinue();
+
+    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Weird name '-1' should be rejected");
+    Assert.assertTrue(rp.getNameError().length() > 0, "Expected name error message for '-1'");
+
+    logInfo("TEST PASSED: " + testCase);
+}
+
+// ==============================
+// TC_011 - WEIRD NAME: ALPHA-NUMERIC MIX
+// ==============================
+@Test(groups = { "regression" })
+public void TC_011_Register_WeirdName_AlphaNum() {
+
+    String testCase = "TC_011_Register_WeirdName_AlphaNum";
+
+    logInfo("TEST STARTED: " + testCase);
+
+    driver.get(p.getProperty("appURL") + "/register");
+    rp = new RegisterPage(driver);
+
+    rp.enterName("1q23");
+    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
+    rp.enterPassword("Test@12345");
+    rp.clickContinue();
+
+    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Weird name '1q23' should be rejected");
+    Assert.assertTrue(rp.getNameError().length() > 0, "Expected name error message for '1q23'");
+
+    logInfo("TEST PASSED: " + testCase);
+}
+@Test(groups = { "regression" })
+public void TC_012_Register_NameWithNumbers() {
+    driver.get(p.getProperty("appURL") + "/register");
+    rp = new RegisterPage(driver);
+    
+    rp.enterName("John123");
+    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
+    rp.enterPassword("Test@12345");
+    rp.clickContinue();
+    
+    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), 
+        "Name with numbers should be rejected if only letters allowed");
+    Assert.assertTrue(rp.getNameError().length() > 0, 
+        "Expected name error for containing numbers");
+}
 }

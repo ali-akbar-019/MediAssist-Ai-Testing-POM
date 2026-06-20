@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import pageObjects.LoginPage;
-
+import org.openqa.selenium.By;
 public class TC_001_LoginTest extends BaseClass {
 
 	LoginPage lp;
@@ -19,6 +19,7 @@ public class TC_001_LoginTest extends BaseClass {
 
 		logInfo("TEST STARTED: Login Test - " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/login");
 		lp = new LoginPage(driver);
 
 		String email = p.getProperty("email");
@@ -30,16 +31,9 @@ public class TC_001_LoginTest extends BaseClass {
 
 		logInfo("Login form submitted");
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		boolean redirected = waitForUrlContains("dashboard", 10);
+		Assert.assertTrue(redirected, "User not redirected to Dashboard");
 
-		String currentUrl = driver.getCurrentUrl();
-
-		logInfo("Current URL after login: " + currentUrl);
-
-		Assert.assertTrue(currentUrl.contains("dashboard"), "User not redirected to Dashboard");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -54,22 +48,14 @@ public class TC_001_LoginTest extends BaseClass {
 
 		logInfo("TEST STARTED: Login Test - " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/login");
 		lp = new LoginPage(driver);
 
 		logInfo("Entering invalid credentials");
 
 		lp.login("wrong@test.com", "wrongpass");
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
-
-		String currentUrl = driver.getCurrentUrl();
-
-		logInfo("Current URL: " + currentUrl);
-
-		Assert.assertFalse(currentUrl.contains("dashboard"), "Invalid login should not redirect");
+		Assert.assertFalse(waitForUrlContains("dashboard", 5), "Invalid login should not redirect");
 
 		String error = lp.getErrorMessage();
 
@@ -90,23 +76,33 @@ public class TC_001_LoginTest extends BaseClass {
 
 		logInfo("TEST STARTED: Login Test - " + testCase);
 
+		driver.get(p.getProperty("appURL") + "/login");
 		lp = new LoginPage(driver);
 
 		logInfo("Submitting empty login form");
 
 		lp.login("", "");
 
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-		}
+		Assert.assertFalse(waitForUrlContains("dashboard", 5), "Empty login should not allow access");
 
-		String currentUrl = driver.getCurrentUrl();
+		Assert.assertTrue(driver.getCurrentUrl().contains("/login"), "Should remain on login page for empty submission");
 
-		logInfo("Current URL: " + currentUrl);
-
-		Assert.assertFalse(currentUrl.contains("dashboard"), "Empty login should not allow access");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
+	@Test(groups = { "regression" })
+public void TC_004_Login_ClientSideValidation() {
+    driver.get(p.getProperty("appURL") + "/login");
+    lp = new LoginPage(driver);
+    
+    // Submit empty form
+    lp.clickLogin(); // or lp.login("", "");
+    
+    // Wait for validation errors to appear
+    waitForElementVisible(By.cssSelector("[data-testid='login-email-error']"), 5);
+    waitForElementVisible(By.cssSelector("[data-testid='login-password-error']"), 5);
+    
+    Assert.assertTrue(driver.findElement(By.cssSelector("[data-testid='login-email-error']")).isDisplayed());
+    Assert.assertTrue(driver.findElement(By.cssSelector("[data-testid='login-password-error']")).isDisplayed());
+}
 }

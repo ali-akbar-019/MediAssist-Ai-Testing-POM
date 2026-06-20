@@ -4,7 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-
+import org.openqa.selenium.By;
 public class RegisterPage {
 
 	WebDriver driver;
@@ -17,30 +17,30 @@ public class RegisterPage {
 
 	// ================= STEP 1 LOCATORS =================
 
-	@FindBy(xpath = "//input[@placeholder='Ali Akbar']")
+	@FindBy(css = "[data-testid='register-name']")
 	WebElement txtName;
 
-	@FindBy(xpath = "//input[@placeholder='you@example.com']")
+	@FindBy(css = "[data-testid='register-email']")
 	WebElement txtEmail;
 
-	@FindBy(xpath = "//input[@placeholder='Min. 8 characters']")
+	@FindBy(css = "[data-testid='register-password']")
 	WebElement txtPassword;
 
-	@FindBy(xpath = "//button[normalize-space()='Continue']")
+	@FindBy(css = "[data-testid='register-continue']")
 	WebElement btnContinue;
 
 	// ================= STEP 2 LOCATORS =================
 
-	@FindBy(xpath = "//input[@placeholder='Your age']")
+	@FindBy(css = "[data-testid='register-age']")
 	WebElement txtAge;
 
-	@FindBy(xpath = "//*[@data-testid='gender-trigger']")
+	@FindBy(css = "[data-testid='gender-trigger']")
 	WebElement ddlGender;
 
-	@FindBy(xpath = "//*[@data-testid='bloodgroup-trigger']")
+	@FindBy(css = "[data-testid='bloodgroup-trigger']")
 	WebElement ddlBloodGroup;
 
-	@FindBy(xpath = "//button[normalize-space()='Create Account']")
+	@FindBy(css = "[data-testid='register-create']")
 	WebElement btnCreateAccount;
 
 	// ================= ACTION METHODS =================
@@ -74,18 +74,20 @@ public class RegisterPage {
 
 	// Step 2 actions
 	public void enterAge(String age) {
+		txtAge.clear();
 		txtAge.sendKeys(age);
 	}
 
-	public void selectGender(String genderOptionXpath) {
-		ddlGender.click();
-		driver.findElement(org.openqa.selenium.By.xpath(genderOptionXpath)).click();
-	}
+// Change these selectors - using label instead of value
+public void selectGender(String genderLabel) {
+    ddlGender.click();
+    driver.findElement(By.cssSelector("[data-testid='gender-option-" + genderLabel + "']")).click();
+}
 
-	public void selectBloodGroup(String bloodGroupXpath) {
-		ddlBloodGroup.click();
-		driver.findElement(org.openqa.selenium.By.xpath(bloodGroupXpath)).click();
-	}
+public void selectBloodGroup(String bloodGroup) {
+    ddlBloodGroup.click();
+    driver.findElement(By.cssSelector("[data-testid='bloodgroup-option-" + bloodGroup + "']")).click();
+}
 
 	public void clickCreateAccount() {
 		btnCreateAccount.click();
@@ -104,5 +106,29 @@ public class RegisterPage {
 
 		fillStep1(name, email, password);
 		fillStep2(age, genderXpath, bloodGroupXpath);
+	}
+	// ================= ERROR GETTERS =================
+	public String getNameError() {
+		try {
+			return driver.findElement(org.openqa.selenium.By.cssSelector("[data-testid='register-name-error']")).getText();
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	public String getEmailError() {
+		try {
+			return driver.findElement(org.openqa.selenium.By.cssSelector("[data-testid='register-email-error']")).getText();
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	public String getPasswordError() {
+		try {
+			return driver.findElement(org.openqa.selenium.By.cssSelector("[data-testid='register-password-error']")).getText();
+		} catch (Exception e) {
+			return "";
+		}
 	}
 }
