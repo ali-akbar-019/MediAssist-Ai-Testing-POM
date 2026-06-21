@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.MedicinePage;
@@ -9,16 +10,24 @@ public class TC_005_MedicineTest extends BaseClass {
 
 	MedicinePage mp;
 
+	@BeforeMethod
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/medicine");
+    mp = new MedicinePage(driver);
+    waitForUrlContains("medicine", 10);
+}
+
 	// ============================================================
 	// TC_005_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_005_01_MedicinePage_Loads() {
 		String testCase = "TC_005_01_MedicinePage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/medicine");
-		mp = new MedicinePage(driver);
+		
+		
 
 		Assert.assertTrue(waitForUrlContains("medicine", 5), "Medicine route not reached");
 		Assert.assertTrue(mp.isHeadingVisible(), "Medicine heading not visible");
@@ -36,7 +45,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_02_SearchInput_Validation";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 
 		// Search button should be disabled when input is empty
 		mp.enterSearch("");
@@ -60,7 +69,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_03_Search_WithEnterKey";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.searchWithEnter("Paracetamol");
 		mp.waitForSearchToComplete();
 
@@ -78,7 +87,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_04_Search_ValidMedicine";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		Assert.assertTrue(mp.isResultDisplayed(), "Result should be displayed");
@@ -98,7 +107,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_05_Search_InvalidMedicine";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.search("InvalidMedicineNameXYZ123");
 		mp.waitForSearchToComplete();
 
@@ -117,7 +126,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_06_Search_EmptyQuery";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.search("");
 
 		Assert.assertFalse(mp.isResultDisplayed(), "Result should not appear for empty query");
@@ -135,7 +144,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_07_Search_SpecialCharacters";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.search("@#$%^&*()");
 		mp.waitForSearchToComplete();
 
@@ -153,7 +162,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_08_Search_NumbersOnly";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.search("12345");
 		mp.waitForSearchToComplete();
 
@@ -171,7 +180,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_09_CommonMedicine_QuickPick";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 
 		Assert.assertTrue(mp.getCommonMedicinesCount() > 0, "Common medicines should be visible");
 		Assert.assertTrue(mp.isCommonMedicineVisible("Paracetamol"), "Paracetamol should be in common medicines");
@@ -192,7 +201,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_10_CommonMedicine_Ibuprofen";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearchWithCommonPick("Ibuprofen");
 
 		Assert.assertTrue(mp.isResultDisplayed(), "Result should be displayed");
@@ -209,11 +218,11 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_11_ResultSection_Uses";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		Assert.assertTrue(mp.isSectionVisible("uses"), "Uses section should be visible");
-		
+
 		mp.expandSection("uses");
 		Assert.assertTrue(mp.isSectionExpanded("uses"), "Uses section should be expanded");
 		Assert.assertTrue(mp.getSectionItemCount("uses") > 0, "Uses section should have items");
@@ -232,11 +241,11 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_12_ResultSection_SideEffects";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		Assert.assertTrue(mp.isSectionVisible("sideEffects"), "Side Effects section should be visible");
-		
+
 		mp.expandSection("sideEffects");
 		Assert.assertTrue(mp.isSectionExpanded("sideEffects"), "Side Effects section should be expanded");
 		Assert.assertTrue(mp.getSectionItemCount("sideEffects") > 0, "Side Effects section should have items");
@@ -252,11 +261,11 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_13_ResultSection_Warnings";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		Assert.assertTrue(mp.isSectionVisible("warnings"), "Warnings section should be visible");
-		
+
 		mp.expandSection("warnings");
 		Assert.assertTrue(mp.isSectionExpanded("warnings"), "Warnings section should be expanded");
 		Assert.assertTrue(mp.getSectionItemCount("warnings") > 0, "Warnings section should have items");
@@ -272,11 +281,11 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_14_ResultSection_Interactions";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		Assert.assertTrue(mp.isSectionVisible("interactions"), "Interactions section should be visible");
-		
+
 		mp.expandSection("interactions");
 		Assert.assertTrue(mp.isSectionExpanded("interactions"), "Interactions section should be expanded");
 		Assert.assertTrue(mp.getSectionItemCount("interactions") > 0, "Interactions section should have items");
@@ -292,7 +301,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_15_Result_ExpandAllSections";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		mp.expandAllSections();
@@ -313,7 +322,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_16_Result_AllSectionsPresent";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 
 		Assert.assertTrue(mp.verifyAllSectionsPresent(), "All sections should be present");
@@ -330,12 +339,12 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_17_SearchAnotherMedicine";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("Paracetamol");
 		Assert.assertTrue(mp.isResultDisplayed(), "Result should be displayed");
 
 		Assert.assertTrue(mp.isSearchAnotherMedicineVisible(), "Search another medicine button should be visible");
-		
+
 		mp.clickSearchAnotherMedicine();
 		mp.waitForLoadingToDisappear();
 
@@ -354,16 +363,16 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_18_MultipleSearches";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
-
-		String[] medicines = {"Paracetamol", "Ibuprofen", "Amoxicillin"};
 		
+
+		String[] medicines = { "Paracetamol", "Ibuprofen", "Amoxicillin" };
+
 		for (String med : medicines) {
 			mp.search(med);
 			mp.waitForSearchToComplete();
 			Assert.assertTrue(mp.isResultDisplayed(), "Result should be displayed for " + med);
 			Assert.assertEquals(mp.getMedicineName(), med, "Medicine name should be " + med);
-			
+
 			mp.clickSearchAnotherMedicine();
 			mp.waitForLoadingToDisappear();
 		}
@@ -379,19 +388,19 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_19_LoadingState";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
 		
+
 		// Start search - loading should appear
 		mp.enterSearch("Paracetamol");
 		mp.clickSearch();
-		
+
 		// Check loading is displayed (briefly)
 		boolean loadingVisible = mp.isLoadingDisplayed();
 		logInfo("Loading visible: " + loadingVisible);
-		
+
 		// Wait for loading to disappear
 		mp.waitForSearchToComplete();
-		
+
 		Assert.assertTrue(mp.isResultDisplayed(), "Result should appear after loading");
 		Assert.assertEquals(mp.getMedicineName(), "Paracetamol", "Medicine name should be Paracetamol");
 
@@ -406,9 +415,9 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_20_VerifyFullMedicineInfo";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
-		mp.completeFullSearch("Paracetamol");
 		
+		mp.completeFullSearch("Paracetamol");
+
 		mp.verifyFullMedicineInfo("Paracetamol");
 
 		logInfo("TEST PASSED: " + testCase);
@@ -422,7 +431,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_21_Edge_VeryLongMedicineName";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		String longName = "A".repeat(200);
 		mp.search(longName);
 		mp.waitForSearchToComplete();
@@ -441,7 +450,7 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_22_Edge_WhitespaceOnly";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.search("   ");
 		mp.waitForSearchToComplete();
 
@@ -460,14 +469,14 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_23_Edge_CaseSensitivity";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
+		
 		mp.completeFullSearch("paracetamol"); // lowercase
 
 		Assert.assertTrue(mp.isResultDisplayed(), "Result should be displayed for lowercase query");
 		Assert.assertEquals(mp.getMedicineName(), "Paracetamol", "Medicine name should be properly capitalized");
 
 		mp.clickSearchAnotherMedicine();
-		
+
 		mp.completeFullSearch("PARACETAMOL"); // uppercase
 		Assert.assertTrue(mp.isResultDisplayed(), "Result should be displayed for uppercase query");
 		Assert.assertEquals(mp.getMedicineName(), "Paracetamol", "Medicine name should be properly capitalized");
@@ -483,18 +492,18 @@ public class TC_005_MedicineTest extends BaseClass {
 		String testCase = "TC_005_24_Edge_SearchResetSearch";
 		logInfo("TEST STARTED: " + testCase);
 
-		mp = new MedicinePage(driver);
 		
+
 		// First search
 		mp.completeFullSearch("Paracetamol");
 		Assert.assertTrue(mp.isResultDisplayed(), "First search result should be displayed");
 		Assert.assertEquals(mp.getMedicineName(), "Paracetamol", "First search medicine name should match");
-		
+
 		// Reset
 		mp.clickSearchAnotherMedicine();
 		mp.waitForLoadingToDisappear();
 		Assert.assertFalse(mp.isResultDisplayed(), "Result should be cleared");
-		
+
 		// Second search
 		mp.completeFullSearch("Ibuprofen");
 		Assert.assertTrue(mp.isResultDisplayed(), "Second search result should be displayed");

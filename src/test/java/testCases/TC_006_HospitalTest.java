@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.HospitalPage;
@@ -9,16 +10,25 @@ public class TC_006_HospitalTest extends BaseClass {
 
 	HospitalPage hp;
 
+@BeforeMethod
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/hospitals");
+    hp = new HospitalPage(driver);
+    hp.waitForPageLoad();
+    waitForUrlContains("hospitals", 10);
+}
+
 	// ============================================================
 	// TC_006_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_006_01_HospitalPage_Loads() {
 		String testCase = "TC_006_01_HospitalPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/hospitals");
-		hp = new HospitalPage(driver);
+		
+		
 		hp.waitForPageLoad();
 
 		Assert.assertTrue(waitForUrlContains("hospitals", 5), "Hospital route not reached");
@@ -39,7 +49,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_02_SearchHospitalByName";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.completeSearchFlow("City Hospital");
 
 		Assert.assertTrue(hp.areResultsVisible(), "Results should be visible");
@@ -56,12 +66,12 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_03_SearchEmptyQuery";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.search("");
 
 		Assert.assertFalse(hp.isLoadingDisplayed(), "Loading should not appear for empty query");
-		Assert.assertTrue(hp.isEmptyStateDisplayed() || hp.getHospitalResultCount() == 0, 
-			"Empty state should be displayed or no results");
+		Assert.assertTrue(hp.isEmptyStateDisplayed() || hp.getHospitalResultCount() == 0,
+				"Empty state should be displayed or no results");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -74,7 +84,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_04_SearchSpecialCharacters";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.completeSearchFlow("@#$%^&*()");
 
 		Assert.assertTrue(hp.getHospitalResultCount() >= 0, "Search should handle special characters");
@@ -91,7 +101,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_05_Filter_Hospitals";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.completeFilterFlow("hospital");
 
 		Assert.assertTrue(hp.isFilterSelected("hospital"), "Hospital filter should be selected");
@@ -108,7 +118,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_06_Filter_Clinics";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.completeFilterFlow("clinic");
 
 		Assert.assertTrue(hp.isFilterSelected("clinic"), "Clinic filter should be selected");
@@ -125,7 +135,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_07_Filter_Pharmacies";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.completeFilterFlow("pharmacy");
 
 		Assert.assertTrue(hp.isFilterSelected("pharmacy"), "Pharmacy filter should be selected");
@@ -142,7 +152,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_08_SwitchFilters";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 
 		hp.selectHospitalFilter();
 		Assert.assertTrue(hp.isFilterSelected("hospital"), "Hospital filter should be selected");
@@ -166,7 +176,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_09_HospitalCardDetails";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.waitForResultsToLoad();
 
 		int resultCount = hp.getHospitalResultCount();
@@ -195,7 +205,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_10_GetDirectionsButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.waitForResultsToLoad();
 
 		int resultCount = hp.getHospitalResultCount();
@@ -217,7 +227,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_11_ResultsCount";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.waitForResultsToLoad();
 
 		int cardCount = hp.getHospitalResultCount();
@@ -237,7 +247,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_12_SearchAndFilterCombined";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 
 		hp.completeSearchFlow("City");
 		hp.selectHospitalFilter();
@@ -257,7 +267,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_13_NearMeButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 
 		Assert.assertTrue(hp.isNearMeButtonVisible(), "Near Me button should be visible");
 		Assert.assertTrue(hp.isNearMeButtonEnabled(), "Near Me button should be enabled");
@@ -265,14 +275,8 @@ public class TC_006_HospitalTest extends BaseClass {
 		hp.completeNearMeFlow();
 
 		// After clicking, either results appear, empty state, or permission denied
-		Assert.assertTrue(
-			hp.areResultsVisible() || 
-			hp.isEmptyStateDisplayed() || 
-			hp.isPermissionDeniedDisplayed() ||
-			hp.isErrorDisplayed() ||
-			hp.isLoadingDisplayed(),
-			"Near Me should trigger some state"
-		);
+		Assert.assertTrue(hp.areResultsVisible() || hp.isEmptyStateDisplayed() || hp.isPermissionDeniedDisplayed()
+				|| hp.isErrorDisplayed() || hp.isLoadingDisplayed(), "Near Me should trigger some state");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -285,7 +289,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_14_PermissionDeniedHandling";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 
 		// Note: This test assumes location permission is denied
 		// If permission is granted, this will be skipped
@@ -309,7 +313,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_15_Edge_VeryLongSearchQuery";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		String longQuery = "A".repeat(200);
 		hp.completeSearchFlow(longQuery);
 
@@ -327,7 +331,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_16_Edge_NumbersOnlySearch";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 		hp.completeSearchFlow("12345");
 
 		Assert.assertTrue(hp.getHospitalResultCount() >= 0, "Search should handle numbers only");
@@ -344,7 +348,7 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_17_Edge_SearchThenClearInput";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 
 		hp.search("City Hospital");
 		hp.waitForSearchResults();
@@ -354,10 +358,8 @@ public class TC_006_HospitalTest extends BaseClass {
 		hp.waitForSearchResults();
 
 		// Should either show all results or empty state
-		Assert.assertTrue(
-			hp.areResultsVisible() || hp.isEmptyStateDisplayed(), 
-			"After clearing, should show results or empty state"
-		);
+		Assert.assertTrue(hp.areResultsVisible() || hp.isEmptyStateDisplayed(),
+				"After clearing, should show results or empty state");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -370,16 +372,13 @@ public class TC_006_HospitalTest extends BaseClass {
 		String testCase = "TC_006_18_Edge_MultipleSearches";
 		logInfo("TEST STARTED: " + testCase);
 
-		hp = new HospitalPage(driver);
+		
 
-		String[] queries = {"City", "Hospital", "Medical", "Clinic"};
+		String[] queries = { "City", "Hospital", "Medical", "Clinic" };
 
 		for (String query : queries) {
 			hp.completeSearchFlow(query);
-			Assert.assertTrue(
-				hp.areResultsVisible() || hp.isEmptyStateDisplayed(), 
-				"Search should work for: " + query
-			);
+			Assert.assertTrue(hp.areResultsVisible() || hp.isEmptyStateDisplayed(), "Search should work for: " + query);
 			logInfo("Search for '" + query + "' completed with " + hp.getHospitalResultCount() + " results");
 		}
 

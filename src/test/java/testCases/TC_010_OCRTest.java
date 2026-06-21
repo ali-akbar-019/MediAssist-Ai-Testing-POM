@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.OCRPage;
@@ -9,10 +10,19 @@ public class TC_010_OCRTest extends BaseClass {
 
 	OCRPage ocrPage;
 
+	@BeforeMethod
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/ocr");
+    ocrPage = new OCRPage(driver);
+    ocrPage.waitForPageLoad();
+    waitForUrlContains("ocr", 10);
+}
+
 	// ============================================================
 	// TC_010_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_010_01_OCRPage_Loads() {
 		String testCase = "TC_010_01_OCRPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
@@ -42,11 +52,11 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		ocrPage.switchToHistoryTab();
 		Assert.assertTrue(ocrPage.isHistoryTabActive(), "History tab should be active");
 		Assert.assertTrue(ocrPage.isHistoryTabContentVisible(), "History tab content should be visible");
-		
+
 		ocrPage.switchToScanTab();
 		Assert.assertTrue(ocrPage.isScanTabActive(), "Scan tab should be active again");
 
@@ -62,20 +72,20 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		Assert.assertTrue(ocrPage.verifyAllDocTypesPresent(), "All document types should be present");
 
 		// Test each document type
 		ocrPage.selectPrescription();
 		Assert.assertTrue(ocrPage.isDocTypeSelected("prescription"), "Prescription should be selected");
-		
+
 		ocrPage.selectLabReport();
 		Assert.assertTrue(ocrPage.isDocTypeSelected("lab_report"), "Lab Report should be selected");
 		Assert.assertFalse(ocrPage.isDocTypeSelected("prescription"), "Prescription should be deselected");
-		
+
 		ocrPage.selectMedicalReport();
 		Assert.assertTrue(ocrPage.isDocTypeSelected("medical_report"), "Medical Report should be selected");
-		
+
 		ocrPage.selectOther();
 		Assert.assertTrue(ocrPage.isDocTypeSelected("other"), "Other should be selected");
 
@@ -91,7 +101,7 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
 		logInfo("Uploading file: " + filePath);
 
@@ -99,7 +109,8 @@ public class TC_010_OCRTest extends BaseClass {
 		ocrPage.waitForResultToAppear();
 
 		Assert.assertTrue(ocrPage.isResultViewVisible(), "Result view should be visible");
-		Assert.assertTrue(ocrPage.getResultTitle().contains("Prescription"), "Result title should contain Prescription");
+		Assert.assertTrue(ocrPage.getResultTitle().contains("Prescription"),
+				"Result title should contain Prescription");
 		Assert.assertTrue(ocrPage.getResultFilename().contains("prescription"), "Filename should contain prescription");
 		Assert.assertFalse(ocrPage.getSummary().isEmpty(), "Summary should not be empty");
 		Assert.assertTrue(ocrPage.getNotesCount() > 0, "Should have at least one note");
@@ -117,7 +128,7 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/lab_report.pdf";
 		logInfo("Uploading file: " + filePath);
 
@@ -141,7 +152,7 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/medical_report.png";
 		logInfo("Uploading file: " + filePath);
 
@@ -149,7 +160,8 @@ public class TC_010_OCRTest extends BaseClass {
 		ocrPage.waitForResultToAppear();
 
 		Assert.assertTrue(ocrPage.isResultViewVisible(), "Result view should be visible");
-		Assert.assertTrue(ocrPage.getResultTitle().contains("Medical Report"), "Result title should contain Medical Report");
+		Assert.assertTrue(ocrPage.getResultTitle().contains("Medical Report"),
+				"Result title should contain Medical Report");
 		Assert.assertFalse(ocrPage.getSummary().isEmpty(), "Summary should not be empty");
 
 		logInfo("TEST PASSED: " + testCase);
@@ -164,7 +176,7 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/other_document.pdf";
 		logInfo("Uploading file: " + filePath);
 
@@ -190,11 +202,11 @@ public class TC_010_OCRTest extends BaseClass {
 		ocrPage.waitForResultToAppear();
 
 		Assert.assertFalse(ocrPage.isRawTextVisible(), "Raw text should not be visible initially");
-		
+
 		ocrPage.clickToggleRawText();
 		Assert.assertTrue(ocrPage.isRawTextVisible(), "Raw text should be visible after toggle");
 		Assert.assertFalse(ocrPage.getRawText().isEmpty(), "Raw text should not be empty");
-		
+
 		ocrPage.clickToggleRawText();
 		Assert.assertFalse(ocrPage.isRawTextVisible(), "Raw text should be hidden after second toggle");
 
@@ -214,7 +226,7 @@ public class TC_010_OCRTest extends BaseClass {
 
 		int notesCount = ocrPage.getNotesCount();
 		Assert.assertTrue(notesCount > 0, "Should have at least one note");
-		
+
 		for (int i = 0; i < notesCount && i < 3; i++) {
 			String note = ocrPage.getNote(i);
 			Assert.assertFalse(note.isEmpty(), "Note at index " + i + " should not be empty");
@@ -234,12 +246,12 @@ public class TC_010_OCRTest extends BaseClass {
 
 		ocrPage = new OCRPage(driver);
 		ocrPage.waitForResultToAppear();
-		
+
 		Assert.assertTrue(ocrPage.isResultViewVisible(), "Result should be visible");
-		
+
 		ocrPage.clickNewRegistry();
 		ocrPage.waitForPageLoad();
-		
+
 		Assert.assertFalse(ocrPage.isResultViewVisible(), "Result should not be visible after New Registry");
 		Assert.assertTrue(ocrPage.isUploadDropzoneVisible(), "Upload dropzone should be visible");
 
@@ -255,16 +267,16 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		// Upload a file
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
 		ocrPage.selectPrescription();
 		ocrPage.uploadFile(filePath);
 		ocrPage.waitForUploadToComplete();
-		
+
 		Assert.assertTrue(ocrPage.isUploadComplete(), "File should be uploaded");
 		Assert.assertFalse(ocrPage.getUploadedFileName().isEmpty(), "Uploaded file name should not be empty");
-		
+
 		ocrPage.clearUploadedFile();
 		Assert.assertFalse(ocrPage.isUploadComplete(), "File should be cleared");
 		Assert.assertTrue(ocrPage.isUploadDropzoneVisible(), "Upload dropzone should be visible");
@@ -281,21 +293,22 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
-		
+
 		ocrPage.selectPrescription();
 		ocrPage.uploadFile(filePath);
-		
+
 		// Check if progress is displayed
 		Assert.assertTrue(ocrPage.isUploadingInProgress(), "Upload progress should be displayed");
-		
+
 		String progressText = ocrPage.getProgressText();
-		Assert.assertTrue(progressText.contains("Uploading & Analyzing"), "Progress text should contain uploading message");
-		
+		Assert.assertTrue(progressText.contains("Uploading & Analyzing"),
+				"Progress text should contain uploading message");
+
 		int progress = ocrPage.getUploadProgress();
 		logInfo("Upload progress: " + progress + "%");
-		
+
 		ocrPage.waitForUploadToComplete();
 		Assert.assertFalse(ocrPage.isUploadingInProgress(), "Upload progress should disappear after completion");
 
@@ -311,16 +324,16 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
-		
+
 		int historyCount = ocrPage.getHistoryCount();
 		int historyItems = ocrPage.getHistoryItemsCount();
-		
+
 		Assert.assertEquals(historyCount, historyItems, "History count badge should match items count");
 		Assert.assertTrue(historyCount > 0, "History should have at least one item");
-		
+
 		// Verify first history item
 		String label = ocrPage.getHistoryItemLabel(0);
 		Assert.assertFalse(label.isEmpty(), "History item label should not be empty");
@@ -338,22 +351,22 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
-		
+
 		int itemsCount = ocrPage.getHistoryItemsCount();
 		if (itemsCount > 0) {
 			String filename = ocrPage.getHistoryItemFilename(0);
 			logInfo("Selecting history item: " + filename);
-			
+
 			ocrPage.clickHistoryItem(0);
 			ocrPage.waitForResultToAppear();
-			
+
 			Assert.assertTrue(ocrPage.isScanTabActive(), "Should switch to scan tab");
 			Assert.assertTrue(ocrPage.isResultViewVisible(), "Result view should be visible");
-			Assert.assertTrue(ocrPage.getResultFilename().contains(filename.replace("• ", "").trim()), 
-				"Result filename should match selected history item");
+			Assert.assertTrue(ocrPage.getResultFilename().contains(filename.replace("• ", "").trim()),
+					"Result filename should match selected history item");
 		} else {
 			logInfo("No history items to select");
 		}
@@ -370,20 +383,20 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
-		
+
 		int itemsBefore = ocrPage.getHistoryItemsCount();
 		int countBefore = ocrPage.getHistoryCount();
-		
+
 		if (itemsBefore > 0) {
 			ocrPage.deleteHistoryItem(0);
 			ocrPage.waitForHistoryToLoad();
-			
+
 			int itemsAfter = ocrPage.getHistoryItemsCount();
 			int countAfter = ocrPage.getHistoryCount();
-			
+
 			Assert.assertTrue(itemsAfter < itemsBefore, "History item should be deleted");
 			Assert.assertTrue(countAfter < countBefore, "History count should decrease");
 			logInfo("History item deleted. Items before: " + itemsBefore + ", after: " + itemsAfter);
@@ -403,20 +416,20 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
-		
+
 		// If there are items, delete them all first
 		int itemsCount = ocrPage.getHistoryItemsCount();
 		for (int i = itemsCount - 1; i >= 0; i--) {
 			ocrPage.deleteHistoryItem(i);
 			ocrPage.waitForHistoryToLoad();
 		}
-		
+
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
-		
+
 		Assert.assertTrue(ocrPage.isHistoryEmptyVisible(), "Empty history message should be visible");
 		Assert.assertEquals(ocrPage.getHistoryItemsCount(), 0, "History items should be 0");
 
@@ -432,17 +445,18 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/invalid.txt";
 		logInfo("Uploading invalid file: " + filePath);
-		
+
 		ocrPage.selectPrescription();
 		ocrPage.uploadFile(filePath);
 		ocrPage.waitForErrorToAppear();
-		
+
 		Assert.assertTrue(ocrPage.isErrorVisible(), "Error should be displayed for invalid file type");
-		Assert.assertTrue(ocrPage.isErrorContains("JPG") || ocrPage.isErrorContains("PNG") || ocrPage.isErrorContains("PDF"), 
-			"Error should mention accepted file types");
+		Assert.assertTrue(
+				ocrPage.isErrorContains("JPG") || ocrPage.isErrorContains("PNG") || ocrPage.isErrorContains("PDF"),
+				"Error should mention accepted file types");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -456,17 +470,17 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/large_file.pdf";
 		logInfo("Uploading large file: " + filePath);
-		
+
 		ocrPage.selectPrescription();
 		ocrPage.uploadFile(filePath);
 		ocrPage.waitForErrorToAppear();
-		
+
 		Assert.assertTrue(ocrPage.isErrorVisible(), "Error should be displayed for file too large");
-		Assert.assertTrue(ocrPage.isErrorContains("10MB") || ocrPage.isErrorContains("large"), 
-			"Error should mention size limit");
+		Assert.assertTrue(ocrPage.isErrorContains("10MB") || ocrPage.isErrorContains("large"),
+				"Error should mention size limit");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -480,28 +494,28 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
+
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
-		
+
 		ocrPage.selectPrescription();
 		ocrPage.uploadFile(filePath);
-		
+
 		// Wait a moment for upload to start
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
-		
+
 		// Switch to history tab
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
-		
+
 		Assert.assertTrue(ocrPage.isHistoryTabActive(), "History tab should be active");
-		
+
 		// Switch back to scan tab
 		ocrPage.switchToScanTab();
 		ocrPage.waitForPageLoad();
-		
+
 		Assert.assertTrue(ocrPage.isScanTabActive(), "Scan tab should be active");
 		Assert.assertTrue(ocrPage.isUploadDropzoneVisible(), "Upload dropzone should be visible");
 
@@ -517,25 +531,26 @@ public class TC_010_OCRTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		ocrPage = new OCRPage(driver);
-		
-		String[] docTypes = {"prescription", "lab_report", "medical_report"};
-		String[] fileNames = {"prescription.jpg", "lab_report.pdf", "medical_report.png"};
-		
+
+		String[] docTypes = { "prescription", "lab_report", "medical_report" };
+		String[] fileNames = { "prescription.jpg", "lab_report.pdf", "medical_report.png" };
+
 		for (int i = 0; i < docTypes.length; i++) {
 			String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/" + fileNames[i];
 			logInfo("Uploading " + docTypes[i] + ": " + filePath);
-			
+
 			ocrPage.selectDocumentType(docTypes[i]);
 			ocrPage.uploadFile(filePath);
 			ocrPage.waitForUploadToComplete();
 			ocrPage.waitForResultToAppear();
-			
+
 			Assert.assertTrue(ocrPage.isResultViewVisible(), "Result should be visible for " + docTypes[i]);
-			Assert.assertTrue(ocrPage.getResultTitle().toLowerCase().contains(
-				docTypes[i].equals("prescription") ? "prescription" :
-				docTypes[i].equals("lab_report") ? "lab report" : "medical report"
-			), "Result title should match document type");
-			
+			Assert.assertTrue(
+					ocrPage.getResultTitle().toLowerCase()
+							.contains(docTypes[i].equals("prescription") ? "prescription"
+									: docTypes[i].equals("lab_report") ? "lab report" : "medical report"),
+					"Result title should match document type");
+
 			ocrPage.clickNewRegistry();
 			ocrPage.waitForPageLoad();
 		}

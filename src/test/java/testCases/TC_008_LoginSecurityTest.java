@@ -1,47 +1,55 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.LoginPage;
 
 public class TC_008_LoginSecurityTest extends BaseClass {
 
-    LoginPage lp;
+	LoginPage lp;
+@BeforeMethod
+public void setupTest() {
+    login();
+    driver.get(p.getProperty("appURL") + "/login");
+    lp = new LoginPage(driver);
+    waitForUrlContains("login", 10);
+}
 
-    @Test(groups = { "regression" })
-    public void TC_008_Login_SQLi_Email() {
-        String testCase = "TC_008_Login_SQLi_Email";
-        logInfo("TEST STARTED: " + testCase);
+	@Test(groups = { "regression", "edge-case" })
+	public void TC_008_Login_SQLi_Email() {
+		String testCase = "TC_008_Login_SQLi_Email";
+		logInfo("TEST STARTED: " + testCase);
 
-        driver.get(p.getProperty("appURL") + "/login");
-        lp = new LoginPage(driver);
+		
+		
 
-        // SQLi-like email payload
-        lp.login("' OR '1'='1@example.com", "somepassword");
-        Assert.assertFalse(waitForUrlContains("dashboard", 5), "SQLi in email should not bypass login");
+		// SQLi-like email payload
+		lp.login("' OR '1'='1@example.com", "somepassword");
+		Assert.assertFalse(waitForUrlContains("dashboard", 5), "SQLi in email should not bypass login");
 
-        String err = lp.getErrorMessage();
-        Assert.assertTrue(err.length() > 0, "Error message expected for SQLi attempt");
+		String err = lp.getErrorMessage();
+		Assert.assertTrue(err.length() > 0, "Error message expected for SQLi attempt");
 
-        logInfo("TEST PASSED: " + testCase);
-    }
+		logInfo("TEST PASSED: " + testCase);
+	}
 
-    @Test(groups = { "regression" })
-    public void TC_009_Login_SQLi_Password() {
-        String testCase = "TC_009_Login_SQLi_Password";
-        logInfo("TEST STARTED: " + testCase);
+	@Test(groups = { "regression" })
+	public void TC_009_Login_SQLi_Password() {
+		String testCase = "TC_009_Login_SQLi_Password";
+		logInfo("TEST STARTED: " + testCase);
 
-        driver.get(p.getProperty("appURL") + "/login");
-        lp = new LoginPage(driver);
+		
+		
 
-        lp.login("nonexistent" + System.currentTimeMillis() + "@example.com", "' OR '1'='1");
-        Assert.assertFalse(waitForUrlContains("dashboard", 5), "SQLi in password should not bypass login");
+		lp.login("nonexistent" + System.currentTimeMillis() + "@example.com", "' OR '1'='1");
+		Assert.assertFalse(waitForUrlContains("dashboard", 5), "SQLi in password should not bypass login");
 
-        String err = lp.getErrorMessage();
-        Assert.assertTrue(err.length() > 0, "Error message expected for SQLi attempt");
+		String err = lp.getErrorMessage();
+		Assert.assertTrue(err.length() > 0, "Error message expected for SQLi attempt");
 
-        logInfo("TEST PASSED: " + testCase);
-    }
+		logInfo("TEST PASSED: " + testCase);
+	}
 
 }

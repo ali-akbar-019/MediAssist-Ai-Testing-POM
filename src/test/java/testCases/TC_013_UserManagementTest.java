@@ -2,6 +2,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.UserManagementPage;
@@ -10,10 +11,15 @@ public class TC_013_UserManagementTest extends BaseClass {
 
 	UserManagementPage ump;
 
+	@BeforeMethod
+	public void loginFirst() {
+		login();
+	}
+
 	// ============================================================
 	// TC_013_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_013_01_UserManagementPage_Loads() {
 		String testCase = "TC_013_01_UserManagementPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
@@ -115,7 +121,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 			int searchResults = ump.getUserRowCount();
 
 			Assert.assertTrue(searchResults > 0, "Search by email should return results");
-			
+
 			boolean found = false;
 			for (int i = 0; i < searchResults; i++) {
 				if (ump.getUserEmail(i).toLowerCase().contains(email.toLowerCase())) {
@@ -168,7 +174,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		ump.waitForTableToLoad();
 
 		ump.completeRoleFilterFlow("admin");
-		
+
 		int rowCount = ump.getUserRowCount();
 		logInfo("Admin users found: " + rowCount);
 
@@ -194,7 +200,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		ump.waitForTableToLoad();
 
 		ump.completeRoleFilterFlow("user");
-		
+
 		int rowCount = ump.getUserRowCount();
 		logInfo("Standard users found: " + rowCount);
 
@@ -256,10 +262,8 @@ public class TC_013_UserManagementTest extends BaseClass {
 			logInfo("User role after toggle: " + afterRole);
 
 			Assert.assertNotEquals(beforeRole, afterRole, "Role should have changed");
-			Assert.assertTrue(
-				afterRole.equals("admin") || afterRole.equals("user"),
-				"Role should be either admin or user"
-			);
+			Assert.assertTrue(afterRole.equals("admin") || afterRole.equals("user"),
+					"Role should be either admin or user");
 		} else {
 			logInfo("No users to toggle role");
 		}
@@ -317,7 +321,8 @@ public class TC_013_UserManagementTest extends BaseClass {
 				String createdDate = ump.getUserCreatedDate(i);
 				String status = ump.getUserStatus(i);
 
-				logInfo("User " + (i + 1) + ": " + name + " | " + email + " | " + role + " | " + createdDate + " | " + status);
+				logInfo("User " + (i + 1) + ": " + name + " | " + email + " | " + role + " | " + createdDate + " | "
+						+ status);
 
 				Assert.assertFalse(name.isEmpty(), "User name should not be empty");
 				Assert.assertFalse(email.isEmpty(), "User email should not be empty");
@@ -353,7 +358,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 			Assert.assertTrue(paginationVisible, "Pagination should be visible for > 10 users");
 			Assert.assertTrue(ump.isPrevPageVisible(), "Previous page button should be visible");
 			Assert.assertTrue(ump.isNextPageVisible(), "Next page button should be visible");
-			
+
 			int currentPage = ump.getCurrentPage();
 			int totalPages = ump.getTotalPages();
 			logInfo("Current page: " + currentPage + ", Total pages: " + totalPages);
@@ -415,16 +420,16 @@ public class TC_013_UserManagementTest extends BaseClass {
 		ump.waitForTableToLoad();
 
 		Assert.assertTrue(ump.isExportBtnVisible(), "Export button should be visible");
-		
+
 		ump.clickExportBtn();
 		logInfo("Export button clicked");
-		
+
 		// Wait for any action
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
-		
+
 		Assert.assertTrue(ump.isPageVisible(), "Page should remain visible after export click");
 
 		logInfo("TEST PASSED: " + testCase);
@@ -442,16 +447,16 @@ public class TC_013_UserManagementTest extends BaseClass {
 		ump.waitForTableToLoad();
 
 		Assert.assertTrue(ump.isEnrollBtnVisible(), "Enroll button should be visible");
-		
+
 		ump.clickEnrollBtn();
 		logInfo("Enroll button clicked");
-		
+
 		// Wait for any action (modal or navigation)
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
-		
+
 		Assert.assertTrue(ump.isPageVisible(), "Page should remain visible after enroll click");
 
 		logInfo("TEST PASSED: " + testCase);

@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.AdminDashboardPage;
@@ -9,10 +10,15 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 
 	AdminDashboardPage adp;
 
+	@BeforeMethod
+	public void loginFirst() {
+		login();
+	}
+
 	// ============================================================
 	// TC_012_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_012_01_AdminDashboardPage_Loads() {
 		String testCase = "TC_012_01_AdminDashboardPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
@@ -218,16 +224,16 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		adp = new AdminDashboardPage(driver);
 
 		Assert.assertTrue(adp.isInitializeBtnVisible(), "Initialize Terminal button should be visible");
-		
+
 		adp.clickInitializeBtn();
 		logInfo("Initialize Terminal button clicked");
-		
+
 		// Wait for any action (if any)
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
-		
+
 		// Verify page is still visible after click
 		Assert.assertTrue(adp.isPageVisible(), "Page should remain visible after button click");
 
@@ -264,7 +270,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 
 		String status = adp.getStatusText();
 		logInfo("Status text: " + status);
-		
+
 		Assert.assertTrue(status.toLowerCase().contains("optimal"), "Status text should contain 'Optimal'");
 
 		logInfo("TEST PASSED: " + testCase);
@@ -282,11 +288,11 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 
 		String latency = adp.getLatencyValue();
 		logInfo("Latency value: " + latency);
-		
+
 		Assert.assertFalse(latency.isEmpty(), "Latency value should not be empty");
 		// Should be something like "42ms" or "1.2s"
-		Assert.assertTrue(latency.matches(".*[ms|s].*") || latency.matches(".*\\d+.*"), 
-			"Latency value should contain time unit or number");
+		Assert.assertTrue(latency.matches(".*[ms|s].*") || latency.matches(".*\\d+.*"),
+				"Latency value should contain time unit or number");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -333,7 +339,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 
 		int barCount = adp.getChartBarCount();
 		logInfo("Chart bars count: " + barCount);
-		
+
 		Assert.assertTrue(barCount > 0, "Chart should have at least one bar");
 
 		// Bars should have different heights
@@ -358,8 +364,8 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		for (int i = 0; i < threadCount; i++) {
 			int progress = adp.getThreadProgressValue(i);
 			logInfo("Thread " + (i + 1) + " progress: " + progress + "%");
-			Assert.assertTrue(progress >= 0 && progress <= 100, 
-				"Thread " + (i + 1) + " progress should be between 0 and 100");
+			Assert.assertTrue(progress >= 0 && progress <= 100,
+					"Thread " + (i + 1) + " progress should be between 0 and 100");
 		}
 
 		logInfo("TEST PASSED: " + testCase);
@@ -377,7 +383,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 
 		int eventCount = adp.getPulseEventCount();
 		String[] times = new String[eventCount];
-		
+
 		for (int i = 0; i < eventCount; i++) {
 			times[i] = adp.getPulseEventTime(i);
 			logInfo("Event " + (i + 1) + " time: " + times[i]);

@@ -1,5 +1,8 @@
 package pageObjects;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -7,9 +10,6 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
-import java.util.List;
 
 public class ChatPage {
 
@@ -220,7 +220,8 @@ public class ChatPage {
 
 	public void deleteSessionById(String sessionId) {
 		try {
-			WebElement deleteBtn = driver.findElement(By.cssSelector("[data-testid='chat-delete-session-" + sessionId + "']"));
+			WebElement deleteBtn = driver
+					.findElement(By.cssSelector("[data-testid='chat-delete-session-" + sessionId + "']"));
 			deleteBtn.click();
 		} catch (Exception e) {
 		}
@@ -273,13 +274,13 @@ public class ChatPage {
 
 	public void clickQuickSuggestion(String suggestion) {
 		try {
-			WebElement suggestionBtn = driver.findElement(
-				By.cssSelector("[data-testid='chat-suggestion-" + suggestion.replace(/\s+/g, '-').toLowerCase() + "']")
-			);
+			String testId = "chat-suggestion-" + suggestion.replace(" ", "-").toLowerCase();
+			WebElement suggestionBtn = driver.findElement(By.cssSelector("[data-testid='" + testId + "']"));
 			suggestionBtn.click();
 		} catch (Exception e) {
 			// Fallback: find by text
-			List<WebElement> suggestions = driver.findElements(By.xpath("//button[contains(text(), '" + suggestion + "')]"));
+			List<WebElement> suggestions = driver
+					.findElements(By.xpath("//button[contains(text(), '" + suggestion + "')]"));
 			if (!suggestions.isEmpty()) {
 				suggestions.get(0).click();
 			}
@@ -406,6 +407,16 @@ public class ChatPage {
 			return sendBtn.isDisplayed();
 		} catch (Exception e) {
 			return false;
+		}
+	}
+
+	public void clickSendButton() {
+		try {
+			sendBtn.click();
+		} catch (Exception e) {
+			// Fallback: find by selector
+			WebElement btn = driver.findElement(By.cssSelector("[data-testid='chat-send-btn']"));
+			btn.click();
 		}
 	}
 

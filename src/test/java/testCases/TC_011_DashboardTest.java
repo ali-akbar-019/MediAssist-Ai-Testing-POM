@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.DashboardPage;
@@ -9,10 +10,15 @@ public class TC_011_DashboardTest extends BaseClass {
 
 	DashboardPage dp;
 
+	@BeforeMethod
+	public void loginFirst() {
+		login();
+	}
+
 	// ============================================================
 	// TC_011_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_011_01_DashboardPage_Loads() {
 		String testCase = "TC_011_01_DashboardPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
@@ -154,7 +160,7 @@ public class TC_011_DashboardTest extends BaseClass {
 
 		Assert.assertTrue(statusCount >= 4, "Should have at least 4 system statuses");
 
-		String[] systems = {"Neurological", "Cardiovascular", "Respiratory", "Biological"};
+		String[] systems = { "Neurological", "Cardiovascular", "Respiratory", "Biological" };
 		for (String system : systems) {
 			String value = dp.getSystemStatusValue(system);
 			logInfo(system + ": " + value);
@@ -175,10 +181,10 @@ public class TC_011_DashboardTest extends BaseClass {
 		dp = new DashboardPage(driver);
 
 		Assert.assertTrue(dp.isVitalityAIInsightVisible(), "AI Insight should be visible");
-		
+
 		String insightText = dp.getVitalityInsightText();
 		logInfo("AI Insight: " + insightText);
-		
+
 		Assert.assertFalse(insightText.isEmpty(), "AI Insight text should not be empty");
 		Assert.assertTrue(insightText.length() > 20, "AI Insight should be detailed");
 
@@ -229,18 +235,18 @@ public class TC_011_DashboardTest extends BaseClass {
 		dp.waitForHistoryToLoad();
 
 		int recordCount = dp.getHistoryRecordCount();
-		
+
 		if (recordCount > 0) {
 			Assert.assertTrue(dp.isViewAllReportsVisible(), "View All Reports button should be visible");
-			
+
 			dp.clickViewAllReports();
 			logInfo("View All Reports clicked");
-			
+
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
-			
+
 			String currentUrl = driver.getCurrentUrl();
 			Assert.assertTrue(currentUrl.contains("/reports"), "Should navigate to reports page");
 		} else {
@@ -294,15 +300,15 @@ public class TC_011_DashboardTest extends BaseClass {
 		dp.waitForDashboardToLoad();
 
 		Assert.assertTrue(dp.isInitiateAnalysisBtnVisible(), "Initiate Analysis button should be visible");
-		
+
 		dp.navigateToAnalyzer();
 		logInfo("Navigate to Analyzer clicked");
-		
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
-		
+
 		String currentUrl = driver.getCurrentUrl();
 		Assert.assertTrue(currentUrl.contains("/analyzer"), "Should navigate to analyzer page");
 
@@ -372,8 +378,8 @@ public class TC_011_DashboardTest extends BaseClass {
 		dp = new DashboardPage(driver);
 
 		Assert.assertTrue(dp.isBadgeVisible(), "Dashboard badge should be visible");
-		Assert.assertTrue(dp.getBadgeText().contains("Health Intelligence System"), 
-			"Badge should contain 'Health Intelligence System'");
+		Assert.assertTrue(dp.getBadgeText().contains("Health Intelligence System"),
+				"Badge should contain 'Health Intelligence System'");
 
 		logInfo("Badge text: " + dp.getBadgeText());
 		logInfo("TEST PASSED: " + testCase);

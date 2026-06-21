@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.ChatPage;
@@ -9,16 +10,23 @@ public class TC_004_ChatTest extends BaseClass {
 
 	ChatPage cp;
 
+	@BeforeMethod
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/chat");
+    cp = new ChatPage(driver);
+    waitForUrlContains("chat", 10);
+}
 	// ============================================================
 	// TC_004_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_004_01_ChatPage_Loads() {
 		String testCase = "TC_004_01_ChatPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/chat");
-		cp = new ChatPage(driver);
+		
+		
 
 		Assert.assertTrue(waitForUrlContains("chat", 5), "Chat route not reached");
 		Assert.assertTrue(cp.isHeadingVisible(), "Chat heading not visible");
@@ -38,7 +46,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_02_SendMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getMessageCount();
@@ -65,7 +73,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_03_SendMessage_WithEnterKey";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getMessageCount();
@@ -88,7 +96,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_04_SendEmptyMessage_ShouldFail";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		cp.clearTextarea();
@@ -112,7 +120,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_05_QuickSuggestion";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isQuickSuggestionsVisible(), "Quick suggestions should be visible");
@@ -139,14 +147,10 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_06_MultipleMessages";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
-		String[] messages = {
-			"I have a headache",
-			"My stomach hurts",
-			"I feel feverish"
-		};
+		String[] messages = { "I have a headache", "My stomach hurts", "I feel feverish" };
 
 		for (String msg : messages) {
 			cp.sendMessage(msg);
@@ -168,7 +172,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_07_CreateNewSession";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getSessionCount();
@@ -194,7 +198,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_08_SelectSession";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		int sessionCount = cp.getSessionCount();
@@ -226,7 +230,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_09_DeleteSession";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		// Create a new session to delete
@@ -255,11 +259,11 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_10_VoiceButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isVoiceButtonVisible(), "Voice button should be visible");
-		
+
 		cp.clickVoiceButton();
 		logInfo("Voice button clicked - should trigger voice input or show feedback");
 
@@ -274,7 +278,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_11_ChatHeader";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isChatHeaderVisible(), "Chat header should be visible");
@@ -291,7 +295,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_12_WelcomeMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isWelcomeMessageVisible(), "Welcome message should be visible for new chat");
@@ -308,7 +312,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_13_ProtocolInfo";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isProtocolInfoVisible(), "Protocol info should be visible");
@@ -324,7 +328,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_14_Edge_SpecialCharacters";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		String specialMsg = "I have pain! @#$%^&*()_+";
@@ -345,7 +349,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_15_Edge_VeryLongMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		String longMessage = "I have severe pain. ".repeat(50);
@@ -361,12 +365,12 @@ public class TC_004_ChatTest extends BaseClass {
 	// ============================================================
 	// TC_004_16 - Edge: Emoji in Message
 	// ============================================================
-	@Test(groups = { "edge-case" }, dependsOnMethods = { "TC_004_01_ChatPage_Loads" })
+	@Test(groups = { "edge-case" })
 	public void TC_004_16_Edge_EmojiInMessage() {
 		String testCase = "TC_004_16_Edge_EmojiInMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		String emojiMsg = "I have a headache 😫 and fever 🌡️";
@@ -387,14 +391,14 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_17_Edge_MultipleQuickSuggestions";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		int suggestionCount = cp.getQuickSuggestionsCount();
 		Assert.assertTrue(suggestionCount > 0, "Quick suggestions should exist");
 
-		String[] suggestions = {"I have a headache", "My stomach hurts", "I feel dizzy"};
-		
+		String[] suggestions = { "I have a headache", "My stomach hurts", "I feel dizzy" };
+
 		for (String suggestion : suggestions) {
 			cp.clickQuickSuggestion(suggestion);
 			Assert.assertEquals(cp.getTextareaValue(), suggestion, "Textarea should be populated with: " + suggestion);
@@ -412,7 +416,7 @@ public class TC_004_ChatTest extends BaseClass {
 		String testCase = "TC_004_18_Edge_MobileNewChat";
 		logInfo("TEST STARTED: " + testCase);
 
-		cp = new ChatPage(driver);
+		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getSessionCount();

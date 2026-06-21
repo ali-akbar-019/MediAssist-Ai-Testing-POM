@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -26,6 +25,7 @@ import org.testng.annotations.Parameters;
 
 import com.aventstack.extentreports.Status;
 
+import pageObjects.LoginPage;
 import utilities.ExtentReportManager;
 
 public class BaseClass {
@@ -44,18 +44,18 @@ public class BaseClass {
 
 		// launch browser based on parameter
 		switch (browser.toLowerCase()) {
-		case "chrome":
-			driver = new ChromeDriver();
-			break;
-		case "edge":
-			driver = new EdgeDriver();
-			break;
-		case "firefox":
-			driver = new FirefoxDriver();
-			break;
-		default:
-			System.out.println("Invalid browser: " + browser + " — launching Chrome");
-			driver = new ChromeDriver();
+			case "chrome":
+				driver = new ChromeDriver();
+				break;
+			case "edge":
+				driver = new EdgeDriver();
+				break;
+			case "firefox":
+				driver = new FirefoxDriver();
+				break;
+			default:
+				System.out.println("Invalid browser: " + browser + " — launching Chrome");
+				driver = new ChromeDriver();
 		}
 
 		driver.manage().deleteAllCookies();
@@ -89,12 +89,12 @@ public class BaseClass {
 
 	public WebElement waitForElementVisible(By locator, int timeoutSeconds) {
 		return new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
-			.until(ExpectedConditions.visibilityOfElementLocated(locator));
+				.until(ExpectedConditions.visibilityOfElementLocated(locator));
 	}
 
 	public boolean waitForUrlContains(String partialUrl, int timeoutSeconds) {
 		return new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
-			.until(ExpectedConditions.urlContains(partialUrl));
+				.until(ExpectedConditions.urlContains(partialUrl));
 	}
 
 	public String getElementTextSafe(By locator) {
@@ -108,5 +108,32 @@ public class BaseClass {
 	// for logging
 	public void logInfo(String message) {
 		ExtentReportManager.getTest().log(Status.INFO, message);
+	}
+
+	//
+	protected void login() {
+
+		driver.get(p.getProperty("appURL") + "/login");
+
+		LoginPage lp = new LoginPage(driver);
+
+		lp.login(p.getProperty("email"), p.getProperty("password"));
+
+		// 🔥 better wait strategy
+		new WebDriverWait(driver, Duration.ofSeconds(10))
+				.until(ExpectedConditions.or(
+						ExpectedConditions.urlContains("dashboard"),
+						ExpectedConditions.urlContains("home")));
+	}
+
+	protected void logout() {
+
+		try {
+
+			driver.findElement(By.id("logout")).click();
+
+		} catch (Exception e) {
+
+		}
 	}
 }

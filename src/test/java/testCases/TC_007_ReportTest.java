@@ -1,6 +1,7 @@
 package testCases;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pageObjects.ReportPage;
@@ -9,16 +10,24 @@ public class TC_007_ReportTest extends BaseClass {
 
 	ReportPage rp;
 
+	@BeforeMethod
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/reports");
+    rp = new ReportPage(driver);
+    rp.waitForPageLoad();
+    waitForUrlContains("reports", 10);
+}
 	// ============================================================
 	// TC_007_01 - Page Load Test
 	// ============================================================
-	@Test(groups = { "smoke", "regression" })
+	@Test(groups = { "smoke", "regression", "edge-case" })
 	public void TC_007_01_ReportPage_Loads() {
 		String testCase = "TC_007_01_ReportPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/reports");
-		rp = new ReportPage(driver);
+		
+		
 		rp.waitForPageLoad();
 
 		Assert.assertTrue(waitForUrlContains("reports", 5), "Reports route not reached");
@@ -34,12 +43,12 @@ public class TC_007_ReportTest extends BaseClass {
 	// ============================================================
 	// TC_007_02 - Reports Grid Display
 	// ============================================================
-	@Test(groups = { "smoke", "regression" }, dependsOnMethods = { "TC_007_01_ReportPage_Loads" })
+	@Test(groups = { "smoke", "regression", "edge-case" }, dependsOnMethods = { "TC_007_01_ReportPage_Loads" })
 	public void TC_007_02_ReportsGrid_Display() {
 		String testCase = "TC_007_02_ReportsGrid_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		Assert.assertTrue(rp.isGridContainerVisible(), "Grid container not visible");
@@ -68,7 +77,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_03_ReportCard_Details";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (rp.hasReports()) {
@@ -107,7 +116,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_04_ReportCard_Metrics";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (rp.hasReports()) {
@@ -136,15 +145,15 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_05_DownloadReport";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (rp.hasReports()) {
 			Assert.assertTrue(rp.isDownloadBtnVisible(0), "Download button should be visible");
-			
+
 			rp.downloadReport(0);
 			logInfo("Download triggered for report at index 0");
-			
+
 			// Wait for download to start
 			try {
 				Thread.sleep(2000);
@@ -165,23 +174,23 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_06_DeleteReport";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (rp.hasReports()) {
 			int beforeCount = rp.getReportCardCount();
 			int beforeTotal = rp.getTotalRecordsCount();
-			
+
 			Assert.assertTrue(rp.isDeleteBtnVisible(0), "Delete button should be visible");
-			
+
 			rp.deleteReport(0);
 			logInfo("Delete triggered for report at index 0");
-			
+
 			rp.waitForGridToLoad();
-			
+
 			int afterCount = rp.getReportCardCount();
 			int afterTotal = rp.getTotalRecordsCount();
-			
+
 			Assert.assertTrue(afterCount <= beforeCount, "Report should be deleted or count decreased");
 			logInfo("Before: " + beforeCount + " cards, After: " + afterCount + " cards");
 		} else {
@@ -199,7 +208,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_07_Pagination_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		int totalRecords = rp.getTotalRecordsCount();
@@ -224,7 +233,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_08_Pagination_Navigation";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		int totalPages = rp.getTotalPageCount();
@@ -267,7 +276,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_09_BackButton_Navigation";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForPageLoad();
 
 		rp.clickBackBtn();
@@ -281,8 +290,8 @@ public class TC_007_ReportTest extends BaseClass {
 
 		// Should navigate to dashboard
 		String currentUrl = driver.getCurrentUrl();
-		Assert.assertTrue(currentUrl.contains("/dashboard") || currentUrl.contains("/"), 
-			"Should navigate to dashboard or home after back");
+		Assert.assertTrue(currentUrl.contains("/dashboard") || currentUrl.contains("/"),
+				"Should navigate to dashboard or home after back");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -295,7 +304,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_10_TotalCount_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		int totalCount = rp.getTotalRecordsCount();
@@ -304,8 +313,8 @@ public class TC_007_ReportTest extends BaseClass {
 		logInfo("Total records: " + totalCount + ", Cards on page: " + cardCount);
 
 		Assert.assertTrue(totalCount >= cardCount, "Total count should be >= cards on page");
-		Assert.assertEquals(totalCount, Integer.parseInt(rp.getTotalRecordsText()), 
-			"Total count display should match actual count");
+		Assert.assertEquals(totalCount, Integer.parseInt(rp.getTotalRecordsText()),
+				"Total count display should match actual count");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -318,21 +327,21 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_11_LoadingState";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/reports");
-		rp = new ReportPage(driver);
+		
+		
 
 		// Check if loading appears (briefly)
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 		}
-		
+
 		boolean loadingVisible = rp.isLoadingVisible();
 		logInfo("Loading visible: " + loadingVisible);
 
 		rp.waitForGridToLoad();
-		Assert.assertTrue(rp.isGridVisible() || rp.isEmptyStateVisible(), 
-			"Grid or empty state should be visible after loading");
+		Assert.assertTrue(rp.isGridVisible() || rp.isEmptyStateVisible(),
+				"Grid or empty state should be visible after loading");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -345,13 +354,13 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_12_Edge_EmptyState";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (!rp.hasReports()) {
 			Assert.assertTrue(rp.isEmptyStateVisible(), "Empty state should be visible");
-			Assert.assertTrue(rp.getEmptyStateText().contains("No Reports Found"), 
-				"Empty state should show 'No Reports Found'");
+			Assert.assertTrue(rp.getEmptyStateText().contains("No Reports Found"),
+					"Empty state should show 'No Reports Found'");
 			Assert.assertEquals(rp.getReportCardCount(), 0, "Report card count should be 0");
 		} else {
 			logInfo("Reports exist, skipping empty state verification");
@@ -369,12 +378,11 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_13_Edge_AllReportCardsHaveData";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (rp.hasReports()) {
-			Assert.assertTrue(rp.verifyAllReportCardsHaveData(), 
-				"All report cards should have complete data");
+			Assert.assertTrue(rp.verifyAllReportCardsHaveData(), "All report cards should have complete data");
 			logInfo("All " + rp.getReportCardCount() + " report cards have valid data");
 		} else {
 			logInfo("No reports to verify");
@@ -391,7 +399,7 @@ public class TC_007_ReportTest extends BaseClass {
 		String testCase = "TC_007_14_Edge_MultipleSymptomsDisplay";
 		logInfo("TEST STARTED: " + testCase);
 
-		rp = new ReportPage(driver);
+		
 		rp.waitForGridToLoad();
 
 		if (rp.hasReports()) {
