@@ -27,8 +27,8 @@ public void loginFirst() {
 		String testCase = "TC_010_01_OCRPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/ocr");
-		ocrPage = new OCRPage(driver);
+		
+		
 		ocrPage.waitForPageLoad();
 
 		Assert.assertTrue(waitForUrlContains("ocr", 5), "OCR route not reached");
@@ -51,7 +51,7 @@ public void loginFirst() {
 		String testCase = "TC_010_02_SwitchToHistoryTab";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		ocrPage.switchToHistoryTab();
 		Assert.assertTrue(ocrPage.isHistoryTabActive(), "History tab should be active");
@@ -71,7 +71,7 @@ public void loginFirst() {
 		String testCase = "TC_010_03_SelectDocumentTypes";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		Assert.assertTrue(ocrPage.verifyAllDocTypesPresent(), "All document types should be present");
 
@@ -100,7 +100,7 @@ public void loginFirst() {
 		String testCase = "TC_010_04_UploadPrescriptionDocument";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
 		logInfo("Uploading file: " + filePath);
@@ -127,7 +127,7 @@ public void loginFirst() {
 		String testCase = "TC_010_05_UploadLabReportDocument";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/lab_report.pdf";
 		logInfo("Uploading file: " + filePath);
@@ -151,7 +151,7 @@ public void loginFirst() {
 		String testCase = "TC_010_06_UploadMedicalReportDocument";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/medical_report.png";
 		logInfo("Uploading file: " + filePath);
@@ -175,7 +175,7 @@ public void loginFirst() {
 		String testCase = "TC_010_07_UploadOtherDocument";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/other_document.pdf";
 		logInfo("Uploading file: " + filePath);
@@ -198,7 +198,7 @@ public void loginFirst() {
 		String testCase = "TC_010_08_ToggleRawTextView";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 		ocrPage.waitForResultToAppear();
 
 		Assert.assertFalse(ocrPage.isRawTextVisible(), "Raw text should not be visible initially");
@@ -221,7 +221,7 @@ public void loginFirst() {
 		String testCase = "TC_010_09_ViewNotesInResult";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 		ocrPage.waitForResultToAppear();
 
 		int notesCount = ocrPage.getNotesCount();
@@ -244,7 +244,7 @@ public void loginFirst() {
 		String testCase = "TC_010_10_NewRegistryButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 		ocrPage.waitForResultToAppear();
 
 		Assert.assertTrue(ocrPage.isResultViewVisible(), "Result should be visible");
@@ -266,7 +266,7 @@ public void loginFirst() {
 		String testCase = "TC_010_11_ClearUploadedFile";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		// Upload a file
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
@@ -292,7 +292,7 @@ public void loginFirst() {
 		String testCase = "TC_010_12_UploadProgressDisplay";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
 
@@ -323,7 +323,7 @@ public void loginFirst() {
 		String testCase = "TC_010_13_HistoryTab_ViewHistory";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
@@ -350,7 +350,7 @@ public void loginFirst() {
 		String testCase = "TC_010_14_HistoryTab_SelectHistoryItem";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
@@ -382,7 +382,7 @@ public void loginFirst() {
 		String testCase = "TC_010_15_HistoryTab_DeleteHistoryItem";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
@@ -415,7 +415,7 @@ public void loginFirst() {
 		String testCase = "TC_010_16_Edge_EmptyHistory";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		ocrPage.switchToHistoryTab();
 		ocrPage.waitForHistoryToLoad();
@@ -444,7 +444,7 @@ public void loginFirst() {
 		String testCase = "TC_010_17_Edge_UploadInvalidFileType";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/invalid.txt";
 		logInfo("Uploading invalid file: " + filePath);
@@ -469,7 +469,7 @@ public void loginFirst() {
 		String testCase = "TC_010_18_Edge_UploadFileTooLarge";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/large_file.pdf";
 		logInfo("Uploading large file: " + filePath);
@@ -493,7 +493,7 @@ public void loginFirst() {
 		String testCase = "TC_010_19_Edge_SwitchTabsDuringUpload";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String filePath = System.getProperty("user.dir") + "/src/test/resources/test-files/prescription.jpg";
 
@@ -530,7 +530,7 @@ public void loginFirst() {
 		String testCase = "TC_010_20_Edge_MultipleQuickUploads";
 		logInfo("TEST STARTED: " + testCase);
 
-		ocrPage = new OCRPage(driver);
+		
 
 		String[] docTypes = { "prescription", "lab_report", "medical_report" };
 		String[] fileNames = { "prescription.jpg", "lab_report.pdf", "medical_report.png" };

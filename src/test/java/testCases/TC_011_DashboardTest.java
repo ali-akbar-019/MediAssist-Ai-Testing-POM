@@ -11,9 +11,13 @@ public class TC_011_DashboardTest extends BaseClass {
 	DashboardPage dp;
 
 	@BeforeMethod
-	public void loginFirst() {
-		login();
-	}
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/dashboard");
+    dp = new DashboardPage(driver);
+    dp.waitForDashboardToLoad();
+    waitForUrlContains("dashboard", 10);
+}
 
 	// ============================================================
 	// TC_011_01 - Page Load Test
@@ -23,8 +27,8 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_01_DashboardPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/dashboard");
-		dp = new DashboardPage(driver);
+		
+		
 		dp.waitForDashboardToLoad();
 
 		Assert.assertTrue(waitForUrlContains("dashboard", 5), "Dashboard route not reached");
@@ -46,7 +50,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_02_CommandBar_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 
 		Assert.assertTrue(dp.isCommandBarVisible(), "Command bar should be visible");
 		Assert.assertFalse(dp.getStatusText().isEmpty(), "Status text should not be empty");
@@ -64,7 +68,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_03_Stats_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 		dp.waitForStatsToLoad();
 
 		Assert.assertTrue(dp.isStatsVisible(), "Stats container should be visible");
@@ -95,7 +99,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_04_Charts_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 		dp.waitForChartsToLoad();
 
 		Assert.assertTrue(dp.isChartsVisible(), "Charts container should be visible");
@@ -122,7 +126,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_05_VitalityIntelligence_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 
 		Assert.assertTrue(dp.isVitalityIntelligenceVisible(), "Vitality intelligence should be visible");
 		Assert.assertTrue(dp.isVitalityGaugeVisible(), "Vitality gauge should be visible");
@@ -153,7 +157,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_06_Vitality_SystemStatuses";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 
 		int statusCount = dp.getSystemStatusCount();
 		logInfo("System statuses count: " + statusCount);
@@ -178,7 +182,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_07_Vitality_AIInsight";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 
 		Assert.assertTrue(dp.isVitalityAIInsightVisible(), "AI Insight should be visible");
 
@@ -199,7 +203,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_08_HistorySection_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 		dp.waitForHistoryToLoad();
 
 		Assert.assertTrue(dp.isHistorySectionVisible(), "History section should be visible");
@@ -231,7 +235,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_09_ViewAllReports_Button";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 		dp.waitForHistoryToLoad();
 
 		int recordCount = dp.getHistoryRecordCount();
@@ -264,7 +268,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_10_UserProfile_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 
 		Assert.assertTrue(dp.isUserProfileVisible(), "User profile section should be visible");
 		Assert.assertTrue(dp.verifyUserProfile(), "User profile should have valid data");
@@ -295,8 +299,8 @@ public class TC_011_DashboardTest extends BaseClass {
 		logInfo("TEST STARTED: " + testCase);
 
 		// Navigate back to dashboard first
-		driver.get(p.getProperty("appURL") + "/dashboard");
-		dp = new DashboardPage(driver);
+		
+		
 		dp.waitForDashboardToLoad();
 
 		Assert.assertTrue(dp.isInitiateAnalysisBtnVisible(), "Initiate Analysis button should be visible");
@@ -323,8 +327,8 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_12_Edge_StatsLoadingState";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/dashboard");
-		dp = new DashboardPage(driver);
+		
+		
 
 		// Check loading state briefly
 		try {
@@ -349,8 +353,8 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_13_Edge_HistoryLoadingState";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/dashboard");
-		dp = new DashboardPage(driver);
+		
+		
 
 		// Check loading state briefly
 		try {
@@ -375,7 +379,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_14_Edge_DashboardBadge";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 
 		Assert.assertTrue(dp.isBadgeVisible(), "Dashboard badge should be visible");
 		Assert.assertTrue(dp.getBadgeText().contains("Health Intelligence System"),
@@ -393,7 +397,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_15_Edge_StatsValuesAreNumeric";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 		dp.waitForStatsToLoad();
 
 		int totalAnalyses = dp.getTotalAnalyses();
@@ -421,7 +425,7 @@ public class TC_011_DashboardTest extends BaseClass {
 		String testCase = "TC_011_16_VerifyAllDashboardComponents";
 		logInfo("TEST STARTED: " + testCase);
 
-		dp = new DashboardPage(driver);
+		
 		dp.waitForDashboardToLoad();
 
 		// Verify all major components

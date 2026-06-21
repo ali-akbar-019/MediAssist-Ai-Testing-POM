@@ -12,10 +12,13 @@ public class TC_013_UserManagementTest extends BaseClass {
 	UserManagementPage ump;
 
 	@BeforeMethod
-	public void loginFirst() {
-		login();
-	}
-
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/admin/users");
+    ump = new UserManagementPage(driver);
+    ump.completeFullPageLoad();
+    waitForUrlContains("admin", 10);
+}
 	// ============================================================
 	// TC_013_01 - Page Load Test
 	// ============================================================
@@ -24,8 +27,8 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_01_UserManagementPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/admin/users");
-		ump = new UserManagementPage(driver);
+		
+		
 		ump.completeFullPageLoad();
 
 		Assert.assertTrue(waitForUrlContains("admin", 5), "Admin route not reached");
@@ -47,7 +50,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_02_TotalCount_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int totalCount = ump.getTotalCount();
@@ -70,7 +73,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_03_Search_Functionality";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		// Get first user's name for search
@@ -109,7 +112,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_04_Search_WithEmail";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -145,7 +148,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_05_Search_EmptyQuery";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		ump.clearSearch();
@@ -170,7 +173,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_06_RoleFilter_Admin";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		ump.completeRoleFilterFlow("admin");
@@ -196,7 +199,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_07_RoleFilter_User";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		ump.completeRoleFilterFlow("user");
@@ -222,7 +225,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_08_RoleFilter_All";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		ump.selectRoleFilter("all");
@@ -247,7 +250,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_09_ToggleUserRole";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -279,7 +282,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_10_ToggleUserRole_Back";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -309,7 +312,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_11_UserDetails_Validation";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -345,7 +348,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_12_Pagination_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int totalCount = ump.getTotalCount();
@@ -379,7 +382,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_13_Pagination_Navigation";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int totalCount = ump.getTotalCount();
@@ -416,7 +419,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_14_ExportButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		Assert.assertTrue(ump.isExportBtnVisible(), "Export button should be visible");
@@ -443,7 +446,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_15_EnrollButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		Assert.assertTrue(ump.isEnrollBtnVisible(), "Enroll button should be visible");
@@ -470,7 +473,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_16_Edge_EmptyState";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		// Search for non-existent user
@@ -500,7 +503,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_17_Edge_SearchSpecialCharacters";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		String specialQuery = "@#$%^&*()";
@@ -523,7 +526,7 @@ public class TC_013_UserManagementTest extends BaseClass {
 		String testCase = "TC_013_18_Edge_AllUsersHaveData";
 		logInfo("TEST STARTED: " + testCase);
 
-		ump = new UserManagementPage(driver);
+		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();

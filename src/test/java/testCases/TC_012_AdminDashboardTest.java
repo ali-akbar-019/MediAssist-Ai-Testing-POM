@@ -11,9 +11,13 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 	AdminDashboardPage adp;
 
 	@BeforeMethod
-	public void loginFirst() {
-		login();
-	}
+public void loginFirst() {
+    login();
+    driver.get(p.getProperty("appURL") + "/admin/dashboard");
+    adp = new AdminDashboardPage(driver);
+    adp.waitForDashboardToLoad();
+    waitForUrlContains("admin", 10);
+}
 
 	// ============================================================
 	// TC_012_01 - Page Load Test
@@ -23,8 +27,8 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_01_AdminDashboardPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/admin/dashboard");
-		adp = new AdminDashboardPage(driver);
+		
+		
 		adp.waitForDashboardToLoad();
 
 		Assert.assertTrue(waitForUrlContains("admin", 5), "Admin route not reached");
@@ -44,8 +48,8 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_02_LoadingState";
 		logInfo("TEST STARTED: " + testCase);
 
-		driver.get(p.getProperty("appURL") + "/admin/dashboard");
-		adp = new AdminDashboardPage(driver);
+		
+		
 
 		// Check loading state briefly
 		try {
@@ -71,7 +75,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_03_KPICards_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 		adp.waitForKPIs();
 
 		Assert.assertTrue(adp.isKPIContainerVisible(), "KPI container should be visible");
@@ -104,7 +108,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_04_KPIValues_AreNumeric";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		int personnel = adp.getPersonnelCount();
 		int symptoms = adp.getSymptomsCount();
@@ -132,7 +136,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_05_IntelligenceSection_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 		adp.waitForConsoleSections();
 
 		Assert.assertTrue(adp.isIntelligenceSectionVisible(), "Intelligence section should be visible");
@@ -161,7 +165,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_06_OperationsSection_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 		adp.waitForConsoleSections();
 
 		Assert.assertTrue(adp.isOperationsSectionVisible(), "Operations section should be visible");
@@ -191,7 +195,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_07_PulseSection_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 		adp.waitForConsoleSections();
 
 		Assert.assertTrue(adp.isPulseSectionVisible(), "Pulse section should be visible");
@@ -221,7 +225,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_08_InitializeTerminalButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		Assert.assertTrue(adp.isInitializeBtnVisible(), "Initialize Terminal button should be visible");
 
@@ -248,7 +252,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_09_ConsoleSections_AllVisible";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 		adp.waitForConsoleSections();
 
 		Assert.assertTrue(adp.verifyConsoleSections(), "All console sections should be visible");
@@ -266,7 +270,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_10_StatusText_ContainsOptimal";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		String status = adp.getStatusText();
 		logInfo("Status text: " + status);
@@ -284,7 +288,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_11_LatencyValue_Format";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		String latency = adp.getLatencyValue();
 		logInfo("Latency value: " + latency);
@@ -305,7 +309,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_12_Edge_AllKPIValuesNonZero";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		int personnel = adp.getPersonnelCount();
 		int symptoms = adp.getSymptomsCount();
@@ -335,7 +339,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_13_Edge_ChartBarsHaveHeights";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		int barCount = adp.getChartBarCount();
 		logInfo("Chart bars count: " + barCount);
@@ -358,7 +362,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_14_Edge_ThreadProgressValues";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		int threadCount = adp.getThreadCount();
 		for (int i = 0; i < threadCount; i++) {
@@ -379,7 +383,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_15_Edge_PulseEventsUniqueTimes";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 
 		int eventCount = adp.getPulseEventCount();
 		String[] times = new String[eventCount];
@@ -406,7 +410,7 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 		String testCase = "TC_012_16_VerifyCompleteAdminDashboard";
 		logInfo("TEST STARTED: " + testCase);
 
-		adp = new AdminDashboardPage(driver);
+		
 		adp.verifyAdminDashboard();
 
 		logInfo("All admin dashboard components verified:");
