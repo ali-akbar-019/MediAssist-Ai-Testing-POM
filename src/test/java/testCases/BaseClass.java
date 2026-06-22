@@ -112,7 +112,10 @@ public class BaseClass {
 
 	// for logging
 	public void logInfo(String message) {
-		ExtentReportManager.getTest().log(Status.INFO, message);
+		if (ExtentReportManager.getTest() != null) {
+			ExtentReportManager.getTest().log(Status.INFO, message);
+		}
+		System.out.println(message);
 	}
 
 	//

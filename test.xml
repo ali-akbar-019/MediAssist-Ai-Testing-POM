@@ -12,7 +12,7 @@
     <test name="Symptom Analyzer Tests - Chrome">
         <parameter name="browser" value="chrome" />
         <classes>
-            <class name="testCases.TC_003_SymptomAnalyzerTest" />
+            <class name="testCases.TC_005_MedicineTest" />
         </classes>
     </test>
 

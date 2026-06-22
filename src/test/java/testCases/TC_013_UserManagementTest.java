@@ -13,10 +13,25 @@ public class TC_013_UserManagementTest extends BaseClass {
 	@BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/admin/users");
     ump = new UserManagementPage(driver);
+
+    boolean adminLoaded = waitForUrlContains("admin", 10);
+
+    if (!adminLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/admin/users");
+        waitForUrlContains("admin", 10);
+    }
+
     ump.completeFullPageLoad();
-    waitForUrlContains("admin", 10);
 }
 
 	// ============================================================

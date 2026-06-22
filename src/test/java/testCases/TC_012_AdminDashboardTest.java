@@ -13,10 +13,25 @@ public class TC_012_AdminDashboardTest extends BaseClass {
 	@BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/admin/dashboard");
     adp = new AdminDashboardPage(driver);
+
+    boolean adminLoaded = waitForUrlContains("admin", 10);
+
+    if (!adminLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/admin/dashboard");
+        waitForUrlContains("admin", 10);
+    }
+
     adp.waitForDashboardToLoad();
-    waitForUrlContains("admin", 10);
 }
 
 	// ============================================================

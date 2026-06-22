@@ -11,12 +11,27 @@ public class TC_004_ChatTest extends BaseClass {
 	ChatPage cp;
 
 	@BeforeMethod
-public void loginFirst() {
-    login();
-    driver.get(p.getProperty("appURL") + "/chat");
-    cp = new ChatPage(driver);
-    waitForUrlContains("chat", 10);
-}
+	public void loginFirst() {
+		login();
+
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
+
+		driver.get(p.getProperty("appURL") + "/chat");
+		cp = new ChatPage(driver);
+
+		boolean chatLoaded = waitForUrlContains("chat", 10);
+
+		if (!chatLoaded && driver.getCurrentUrl().contains("login")) {
+			logInfo("Redirected to login, trying to login again...");
+			login();
+			driver.get(p.getProperty("appURL") + "/chat");
+			waitForUrlContains("chat", 10);
+		}
+	}
+
 	// ============================================================
 	// TC_004_01 - Page Load Test
 	// ============================================================
@@ -24,9 +39,6 @@ public void loginFirst() {
 	public void TC_004_01_ChatPage_Loads() {
 		String testCase = "TC_004_01_ChatPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		Assert.assertTrue(waitForUrlContains("chat", 5), "Chat route not reached");
 		Assert.assertTrue(cp.isHeadingVisible(), "Chat heading not visible");
@@ -46,7 +58,6 @@ public void loginFirst() {
 		String testCase = "TC_004_02_SendMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getMessageCount();
@@ -73,7 +84,6 @@ public void loginFirst() {
 		String testCase = "TC_004_03_SendMessage_WithEnterKey";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getMessageCount();
@@ -96,7 +106,6 @@ public void loginFirst() {
 		String testCase = "TC_004_04_SendEmptyMessage_ShouldFail";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		cp.clearTextarea();
@@ -120,7 +129,6 @@ public void loginFirst() {
 		String testCase = "TC_004_05_QuickSuggestion";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isQuickSuggestionsVisible(), "Quick suggestions should be visible");
@@ -147,7 +155,6 @@ public void loginFirst() {
 		String testCase = "TC_004_06_MultipleMessages";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		String[] messages = { "I have a headache", "My stomach hurts", "I feel feverish" };
@@ -172,7 +179,6 @@ public void loginFirst() {
 		String testCase = "TC_004_07_CreateNewSession";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getSessionCount();
@@ -198,7 +204,6 @@ public void loginFirst() {
 		String testCase = "TC_004_08_SelectSession";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		int sessionCount = cp.getSessionCount();
@@ -230,7 +235,6 @@ public void loginFirst() {
 		String testCase = "TC_004_09_DeleteSession";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		// Create a new session to delete
@@ -259,7 +263,6 @@ public void loginFirst() {
 		String testCase = "TC_004_10_VoiceButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isVoiceButtonVisible(), "Voice button should be visible");
@@ -278,7 +281,6 @@ public void loginFirst() {
 		String testCase = "TC_004_11_ChatHeader";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isChatHeaderVisible(), "Chat header should be visible");
@@ -295,7 +297,6 @@ public void loginFirst() {
 		String testCase = "TC_004_12_WelcomeMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isWelcomeMessageVisible(), "Welcome message should be visible for new chat");
@@ -312,7 +313,6 @@ public void loginFirst() {
 		String testCase = "TC_004_13_ProtocolInfo";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		Assert.assertTrue(cp.isProtocolInfoVisible(), "Protocol info should be visible");
@@ -328,7 +328,6 @@ public void loginFirst() {
 		String testCase = "TC_004_14_Edge_SpecialCharacters";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		String specialMsg = "I have pain! @#$%^&*()_+";
@@ -349,7 +348,6 @@ public void loginFirst() {
 		String testCase = "TC_004_15_Edge_VeryLongMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		String longMessage = "I have severe pain. ".repeat(50);
@@ -370,7 +368,6 @@ public void loginFirst() {
 		String testCase = "TC_004_16_Edge_EmojiInMessage";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		String emojiMsg = "I have a headache 😫 and fever 🌡️";
@@ -391,7 +388,6 @@ public void loginFirst() {
 		String testCase = "TC_004_17_Edge_MultipleQuickSuggestions";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		int suggestionCount = cp.getQuickSuggestionsCount();
@@ -416,7 +412,6 @@ public void loginFirst() {
 		String testCase = "TC_004_18_Edge_MobileNewChat";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		cp.waitForChatWindow();
 
 		int beforeCount = cp.getSessionCount();

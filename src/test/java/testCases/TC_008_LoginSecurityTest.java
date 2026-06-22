@@ -12,9 +12,23 @@ public class TC_008_LoginSecurityTest extends BaseClass {
 @BeforeMethod
 public void setupTest() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/login");
     lp = new LoginPage(driver);
-    waitForUrlContains("login", 10);
+
+    boolean loginPageLoaded = waitForUrlContains("login", 10);
+
+    if (!loginPageLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/login");
+        waitForUrlContains("login", 10);
+    }
 }
 
 	@Test(groups = { "regression", "edge-case" })

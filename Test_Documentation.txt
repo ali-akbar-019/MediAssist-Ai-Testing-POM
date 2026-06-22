@@ -1,0 +1,606 @@
+================================================================================
+                    MEDIASSIST AI - TEST AUTOMATION DOCUMENTATION
+================================================================================
+
+PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+Project Name     : MediAssistAi
+Version          : 0.0.1-SNAPSHOT
+Java Version     : 11
+Test Framework   : TestNG 7.12.0
+Automation Tool  : Selenium Java 4.44.0
+Reporting        : ExtentReports 5.1.2
+Build Tool       : Maven (with Surefire plugin)
+
+Description:
+MediAssistAi is a pure test automation project (no production source code) that
+tests a medical assistance web application covering symptom analysis, AI chat,
+medicine lookup, hospital finder, OCR document scanning, reports, dashboards,
+and user management.
+
+================================================================================
+                    TEST ARCHITECTURE - PAGE OBJECT MODEL (POM)
+================================================================================
+
+All page object classes reside in:
+    src/test/java/pageObjects/
+
+11 Page Object Classes:
+
++---------------------------+--------+--------------------------------------------------+
+| Page Object               | Lines  | Description                                      |
++---------------------------+--------+--------------------------------------------------+
+| LoginPage.java            |    70  | Login form - email/password fields, toggle        |
+|                           |        | visibility, error messages, full login action     |
+| RegisterPage.java         |   148  | Two-step registration: Step 1 (name/email/pwd),   |
+|                           |        | Step 2 (age/gender/blood group), full flow        |
+| DashboardPage.java        |   663  | User dashboard - command bar, stats cards, charts,|
+|                           |        | history grid, vitality intelligence gauge, AI     |
+|                           |        | insights, profile section                         |
+| AdminDashboardPage.java   |   396  | Admin dashboard - headers, KPI cards, AI          |
+|                           |        | intelligence (confidence, top symptom), pulse     |
+|                           |        | events, loading/error states                      |
+| SymptomAnalyzerPage.java  |   566  | 4-step symptom analyzer: body map (front/back),   |
+|                           |        | symptom input, severity/duration/pain type,       |
+|                           |        | analysis results with conditions                  |
+| ChatPage.java             |   568  | AI chat interface - sessions, messages, textarea, |
+|                           |        | quick suggestions, voice button, protocol info    |
+| MedicinePage.java         |   404  | Medicine search - search input, common meds,      |
+|                           |        | result display (uses, side effects, warnings,     |
+|                           |        | interactions), loading/error states               |
+| HospitalPage.java         |   416  | Hospital finder - search, Near Me, filters        |
+|                           |        | (hospital/clinic/pharmacy), results, directions   |
+| ReportPage.java           |   496  | Reports listing - stats, report cards, download/  |
+|                           |        | delete, pagination (prev/next/page numbers)       |
+| OCRPage.java              |   700  | OCR scanner - scan/history tabs, doc types, file  |
+|                           |        | upload, result view, history management           |
+| UserManagementPage.java   |   561  | Admin user mgmt - search, role filter, table,     |
+|                           |        | role toggle, delete with confirmation, pagination |
++---------------------------+--------+--------------------------------------------------+
+
+Total Page Object Lines: 4,988
+
+================================================================================
+                    TEST SUITE - DETAILED BREAKDOWN
+================================================================================
+
+All test case files reside in:
+    src/test/java/testCases/
+
+BaseClass.java (155 lines) provides shared infrastructure:
+  - setup/browser launch (Chrome/Edge/Firefox via TestNG parameter)
+  - tearDown / driver cleanup
+  - login() / logout() authentication methods
+  - waitForElementVisible(), waitForUrlContains()
+  - captureScreen() for failure screenshots
+  - logInfo() for ExtentReport + console logging
+
+Additional utilities in src/test/java/utilities/:
+  - XLUtility.java       - Excel read/write (Apache POI)
+  - ExtentReportManager.java - HTML report management
+
+
+--------------------------------------------------------------------------------
+TC_001 - Login Test
+  File    : TC_001_LoginTest.java (170 lines)
+  Methods : 4  |  Edge Cases : 0
+
+  Tests:
+    1. TC_001_Login_ValidCredentials         [smoke, regression]
+    2. TC_002_Login_InvalidCredentials       [regression]
+    3. TC_003_Login_EmptyFields              [regression]
+    4. TC_004_Login_ClientSideValidation     [regression]
+
+  Covers: valid login, invalid credentials, empty fields, client-side validation
+
+
+--------------------------------------------------------------------------------
+TC_002 - Register Test
+  File    : TC_002_RegisterTest.java (407 lines)
+  Methods : 11 |  Edge Cases : 0
+
+  Tests:
+    1.  TC_002_Register_ValidUser            [smoke, regression]
+    2.  TC_003_Register_InvalidEmail         [regression]
+    3.  TC_004_Register_WeakPassword         [regression]
+    4.  TC_005_Register_EmptyFields          [regression]
+    5.  TC_006_Register_InvalidName          [regression]
+    6.  TC_007_Register_ShortName            [regression]
+    7.  TC_008_Register_SkipProfile          [regression]
+    8.  TC_009_Register_SQLInjection_Name    [regression]
+    9.  TC_010_Register_WeirdName_DashNumber [regression]
+    10. TC_011_Register_WeirdName_AlphaNum   [regression]
+    11. TC_012_Register_NameWithNumbers      [regression]
+
+  Covers: valid registration, invalid email, weak password, empty fields, name
+  validation, skip profile, SQL injection, special characters in names
+
+
+--------------------------------------------------------------------------------
+TC_003 - Symptom Analyzer Test
+  File    : TC_003_SymptomAnalyzerTest.java (586 lines)
+  Methods : 28 |  Edge Cases : 4
+
+  Tests:
+    1.  TC_003_01_AnalyzerPage_Loads              [smoke, regression]
+    2.  TC_003_02_Step1_SelectSingleBodyPart      [regression]
+    3.  TC_003_03_Step1_SelectMultipleBodyParts   [regression]
+    4.  TC_003_04_Step1_SwitchViews               [regression]
+    5.  TC_003_05_Step1_RemoveBodyPart            [regression]
+    6.  TC_003_06_Step1_ClearAllBodyParts         [regression]
+    7.  TC_003_07_Step1_ProceedWithoutSelection   [regression]
+    8.  TC_003_08_Step2_AddSymptom                [regression]
+    9.  TC_003_09_Step2_AddMultipleSymptoms       [regression]
+    10. TC_003_10_Step2_AddSymptomViaSuggestion   [regression]
+    11. TC_003_11_Step2_RemoveSymptom             [regression]
+    12. TC_003_12_Step2_ProceedWithoutSymptoms    [regression]
+    13. TC_003_13_Step3_SetSeverity               [regression]
+    14. TC_003_14_Step3_SelectPainTypes           [regression]
+    15. TC_003_15_Step3_SetDuration               [regression]
+    16. TC_003_16_Step3_DurationValidation        [edge-case]
+    17. TC_003_17_Step3_SelectWorseAt             [regression]
+    18. TC_003_18_Step3_AddClinicalNotes          [regression]
+    19. TC_003_19_Step3_ProceedWithoutRequired    [regression]
+    20. TC_003_20_Analysis_CompleteFullFlow       [smoke, regression]
+    21. TC_003_21_Analysis_VerifySeverityLevels   [regression]
+    22. TC_003_22_Analysis_PossibleConditions     [regression]
+    23. TC_003_23_Analysis_ResetAnalyzer          [regression]
+    24. TC_003_24_Navigation_BackButton           [regression]
+    25. TC_003_25_Edge_ClinicalNotes_Max500Chars  [edge-case]
+    26. TC_003_26_Edge_MultipleBodyPartsSelection [edge-case]
+    27. TC_003_27_Edge_SpecialCharactersInNotes   [edge-case]
+    28. TC_003_28_Analysis_EmergencyAlert         [regression]
+
+  Covers: 4-step analysis flow, body part selection (single/multiple/remove/
+  clear), view switching (front/back), symptom management (add/remove/
+  suggestions), severity slider, pain type selection, duration input &
+  validation, worse-at timing, clinical notes, back navigation, full analysis
+  submission, results verification, reset, emergency alert detection
+
+
+--------------------------------------------------------------------------------
+TC_004 - Chat Test
+  File    : TC_004_ChatTest.java (426 lines)
+  Methods : 18 |  Edge Cases : 6
+
+  Tests:
+    1.  TC_004_01_ChatPage_Loads              [smoke, regression, edge-case]
+    2.  TC_004_02_SendMessage                 [smoke, regression]
+    3.  TC_004_03_SendMessage_WithEnterKey    [regression]
+    4.  TC_004_04_SendEmptyMessage_ShouldFail [regression]
+    5.  TC_004_05_QuickSuggestion             [smoke, regression]
+    6.  TC_004_06_MultipleMessages            [regression]
+    7.  TC_004_07_CreateNewSession            [smoke, regression]
+    8.  TC_004_08_SelectSession               [regression]
+    9.  TC_004_09_DeleteSession               [regression]
+    10. TC_004_10_VoiceButton                 [regression]
+    11. TC_004_11_ChatHeader                  [regression]
+    12. TC_004_12_WelcomeMessage              [regression]
+    13. TC_004_13_ProtocolInfo                [regression]
+    14. TC_004_14_Edge_SpecialCharacters      [edge-case]
+    15. TC_004_15_Edge_VeryLongMessage        [edge-case]
+    16. TC_004_16_Edge_EmojiInMessage         [edge-case]
+    17. TC_004_17_Edge_MultipleQuickSuggest   [edge-case]
+    18. TC_004_18_Edge_MobileNewChat          [edge-case]
+
+  Covers: page load, send message (button + enter key), empty message
+  rejection, quick suggestions, multi-message conversation, session CRUD
+  (create/select/delete), voice button, header/welcome/protocol info,
+  special characters, long messages, emoji support, mobile new chat
+
+
+--------------------------------------------------------------------------------
+TC_005 - Medicine Test
+  File    : TC_005_MedicineTest.java (528 lines)
+  Methods : 24 |  Edge Cases : 7
+
+  Tests:
+    1.  TC_005_01_MedicinePage_Loads             [smoke, regression, edge-case]
+    2.  TC_005_02_SearchInput_Validation         [regression]
+    3.  TC_005_03_Search_WithEnterKey            [regression]
+    4.  TC_005_04_Search_ValidMedicine           [smoke, regression]
+    5.  TC_005_05_Search_InvalidMedicine         [regression]
+    6.  TC_005_06_Search_EmptyQuery              [regression]
+    7.  TC_005_07_Search_SpecialCharacters       [edge-case]
+    8.  TC_005_08_Search_NumbersOnly             [edge-case]
+    9.  TC_005_09_CommonMedicine_QuickPick       [smoke, regression]
+    10. TC_005_10_CommonMedicine_Ibuprofen       [regression]
+    11. TC_005_11_ResultSection_Uses             [regression]
+    12. TC_005_12_ResultSection_SideEffects      [regression]
+    13. TC_005_13_ResultSection_Warnings         [regression]
+    14. TC_005_14_ResultSection_Interactions     [regression]
+    15. TC_005_15_Result_ExpandAllSections       [regression]
+    16. TC_005_16_Result_AllSectionsPresent      [regression]
+    17. TC_005_17_SearchAnotherMedicine          [regression]
+    18. TC_005_18_MultipleSearches               [regression]
+    19. TC_005_19_LoadingState                   [regression]
+    20. TC_005_20_VerifyFullMedicineInfo         [smoke, regression]
+    21. TC_005_21_Edge_VeryLongMedicineName      [edge-case]
+    22. TC_005_22_Edge_WhitespaceOnly            [edge-case]
+    23. TC_005_23_Edge_CaseSensitivity           [edge-case]
+    24. TC_005_24_Edge_SearchResetSearch         [edge-case]
+
+  Covers: page load, search (valid/invalid/empty/special chars/numbers/enter),
+  common medicine quick picks, result sections (uses/side effects/warnings/
+  interactions), multi-section expand, multiple searches, loading state,
+  long names, whitespace, case sensitivity, search reset
+
+
+--------------------------------------------------------------------------------
+TC_006 - Hospital Test
+  File    : TC_006_HospitalTest.java (402 lines)
+  Methods : 18 |  Edge Cases : 7
+
+  Tests:
+    1.  TC_006_01_HospitalPage_Loads           [smoke, regression, edge-case]
+    2.  TC_006_02_SearchHospitalByName         [smoke, regression]
+    3.  TC_006_03_SearchEmptyQuery             [regression]
+    4.  TC_006_04_SearchSpecialCharacters      [edge-case]
+    5.  TC_006_05_Filter_Hospitals             [regression]
+    6.  TC_006_06_Filter_Clinics               [regression]
+    7.  TC_006_07_Filter_Pharmacies            [regression]
+    8.  TC_006_08_SwitchFilters                [regression]
+    9.  TC_006_09_HospitalCardDetails          [regression]
+    10. TC_006_10_GetDirectionsButton          [regression]
+    11. TC_006_11_ResultsCount                 [regression]
+    12. TC_006_12_SearchAndFilterCombined      [regression]
+    13. TC_006_13_NearMeButton                 [smoke, regression]
+    14. TC_006_14_PermissionDeniedHandling     [edge-case]
+    15. TC_006_15_Edge_VeryLongSearchQuery     [edge-case]
+    16. TC_006_16_Edge_NumbersOnlySearch       [edge-case]
+    17. TC_006_17_Edge_SearchThenClearInput    [edge-case]
+    18. TC_006_18_Edge_MultipleSearches        [edge-case]
+
+  Covers: page load, search by name, empty/special/long/number queries,
+  filters (hospitals/clinics/pharmacies), filter switching, card detail
+  verification, directions button, results count, search+filter combos,
+  Near Me button, permission denied handling, clear input
+
+
+--------------------------------------------------------------------------------
+TC_007 - Report Test
+  File    : TC_007_ReportTest.java (433 lines)
+  Methods : 14 |  Edge Cases : 5
+
+  Tests:
+    1.  TC_007_01_ReportPage_Loads            [smoke, regression, edge-case]
+    2.  TC_007_02_ReportsGrid_Display         [smoke, regression, edge-case]
+    3.  TC_007_03_ReportCard_Details          [regression]
+    4.  TC_007_04_ReportCard_Metrics          [regression]
+    5.  TC_007_05_DownloadReport              [regression]
+    6.  TC_007_06_DeleteReport                [regression]
+    7.  TC_007_07_Pagination_Display          [regression]
+    8.  TC_007_08_Pagination_Navigation       [regression]
+    9.  TC_007_09_BackButton_Navigation       [regression]
+    10. TC_007_10_TotalCount_Display          [regression]
+    11. TC_007_11_LoadingState                [regression]
+    12. TC_007_12_Edge_EmptyState             [edge-case]
+    13. TC_007_13_Edge_AllReportCardsHaveData [edge-case]
+    14. TC_007_14_Edge_MultipleSymptomsDisplay[edge-case]
+
+  Covers: page load, report grid display, card details & metrics, download,
+  delete, pagination (display/navigation), back button, total count, loading
+  state, empty state, data completeness, multiple symptoms display
+
+
+--------------------------------------------------------------------------------
+TC_008 - Login Security Test
+  File    : TC_008_LoginSecurityTest.java (69 lines)
+  Methods : 2  |  Edge Cases : 1
+
+  Tests:
+    1. TC_008_Login_SQLi_Email                [regression, edge-case]
+    2. TC_009_Login_SQLi_Password             [regression]
+
+  Covers: SQL injection attempts in email field, SQL injection in password field
+
+
+--------------------------------------------------------------------------------
+TC_010 - OCR Test
+  File    : TC_010_OCRTest.java (575 lines)
+  Methods : 20 |  Edge Cases : 6
+
+  Tests:
+    1.  TC_010_01_OCRPage_Loads               [smoke, regression, edge-case]
+    2.  TC_010_02_SwitchToHistoryTab          [regression]
+    3.  TC_010_03_SelectDocumentTypes         [regression]
+    4.  TC_010_04_UploadPrescriptionDocument  [smoke, regression]
+    5.  TC_010_05_UploadLabReportDocument     [regression]
+    6.  TC_010_06_UploadMedicalReportDocument [regression]
+    7.  TC_010_07_UploadOtherDocument         [regression]
+    8.  TC_010_08_ToggleRawTextView           [regression]
+    9.  TC_010_09_ViewNotesInResult           [regression]
+    10. TC_010_10_NewRegistryButton           [regression]
+    11. TC_010_11_ClearUploadedFile           [regression]
+    12. TC_010_12_UploadProgressDisplay       [regression]
+    13. TC_010_13_HistoryTab_ViewHistory      [regression]
+    14. TC_010_14_HistoryTab_SelectHistoryItem[regression]
+    15. TC_010_15_HistoryTab_DeleteHistoryItem[regression]
+    16. TC_010_16_Edge_EmptyHistory           [edge-case]
+    17. TC_010_17_Edge_UploadInvalidFileType  [edge-case]
+    18. TC_010_18_Edge_UploadFileTooLarge     [edge-case]
+    19. TC_010_19_Edge_SwitchTabsDuringUpload [edge-case]
+    20. TC_010_20_Edge_MultipleQuickUploads   [edge-case]
+
+  Covers: page load, scan/history tab switching, document type selection
+  (prescription/lab/medical/other), file upload, raw text toggle, notes view,
+  new registry, clear file, progress display, history CRUD (view/select/delete),
+  empty history, invalid file type, file too large, tab switching during upload,
+  multiple quick uploads
+
+
+--------------------------------------------------------------------------------
+TC_011 - Dashboard Test
+  File    : TC_011_DashboardTest.java (457 lines)
+  Methods : 16 |  Edge Cases : 5
+
+  Tests:
+    1.  TC_011_01_DashboardPage_Loads             [smoke, regression, edge-case]
+    2.  TC_011_02_CommandBar_Display              [smoke, regression]
+    3.  TC_011_03_Stats_Display                   [smoke, regression]
+    4.  TC_011_04_Charts_Display                  [regression]
+    5.  TC_011_05_VitalityIntelligence_Display    [smoke, regression]
+    6.  TC_011_06_Vitality_SystemStatuses         [regression]
+    7.  TC_011_07_Vitality_AIInsight              [regression]
+    8.  TC_011_08_HistorySection_Display          [smoke, regression]
+    9.  TC_011_09_ViewAllReports_Button           [regression]
+    10. TC_011_10_UserProfile_Display             [regression]
+    11. TC_011_11_NavigateToAnalyzer              [regression]
+    12. TC_011_12_Edge_StatsLoadingState          [edge-case]
+    13. TC_011_13_Edge_HistoryLoadingState        [edge-case]
+    14. TC_011_14_Edge_DashboardBadge             [edge-case]
+    15. TC_011_15_Edge_StatsValuesAreNumeric      [edge-case]
+    16. TC_011_16_VerifyAllDashboardComponents    [smoke, regression]
+
+  Covers: page load, command bar, stats cards, charts (severity pie,
+  bodypart bar), vitality intelligence & AI insight, system statuses,
+  history section, view all reports, user profile, navigate to analyzer,
+  loading states, badge display, numeric stat validation, all components
+
+
+--------------------------------------------------------------------------------
+TC_012 - Admin Dashboard Test
+  File    : TC_012_AdminDashboardTest.java (291 lines)
+  Methods : 11 |  Edge Cases : 3
+
+  Tests:
+    1.  TC_012_01_AdminDashboardPage_Loads        [smoke, regression, edge-case]
+    2.  TC_012_02_LoadingState                    [regression]
+    3.  TC_012_03_KPICards_Display                [smoke, regression]
+    4.  TC_012_04_KPIValues_AreNumeric            [regression]
+    5.  TC_012_05_IntelligenceSection_Display     [regression]
+    6.  TC_012_06_PulseSection_Display            [regression]
+    7.  TC_012_07_StatusText_ContainsOnline       [regression]
+    8.  TC_012_08_LatencyValue_Format             [regression]
+    9.  TC_012_09_Edge_AllKPIValuesNonNegative    [edge-case]
+    10. TC_012_10_Edge_PulseEventsValid           [edge-case]
+    11. TC_012_11_VerifyCompleteAdminDashboard    [smoke, regression]
+
+  Covers: page load, loading state, KPI cards display & numeric validation,
+  intelligence section (confidence, top symptom), pulse events, status/latency,
+  non-negative KPIs, valid pulse events, complete dashboard verification
+
+
+--------------------------------------------------------------------------------
+TC_013 - User Management Test
+  File    : TC_013_UserManagementTest.java (541 lines)
+  Methods : 18 |  Edge Cases : 4
+
+  Tests:
+    1.  TC_013_01_UserManagementPage_Loads        [smoke, regression, edge-case]
+    2.  TC_013_02_TotalCount_Display              [regression]
+    3.  TC_013_03_Search_Functionality            [smoke, regression]
+    4.  TC_013_04_Search_WithEmail                [regression]
+    5.  TC_013_05_Search_EmptyQuery               [regression]
+    6.  TC_013_06_RoleFilter_Admin                [regression]
+    7.  TC_013_07_RoleFilter_User                 [regression]
+    8.  TC_013_08_RoleFilter_All                  [regression]
+    9.  TC_013_09_ToggleUserRole                  [regression]
+    10. TC_013_10_ToggleUserRole_Back             [regression]
+    11. TC_013_11_UserDetails_Validation          [regression]
+    12. TC_013_12_Pagination_Display              [regression]
+    13. TC_013_13_Pagination_Navigation           [regression]
+    14. TC_013_14_DeleteUser                      [regression]
+    15. TC_013_15_DeleteModal_Cancel              [regression]
+    16. TC_013_16_Edge_EmptyState                 [edge-case]
+    17. TC_013_17_Edge_SearchSpecialCharacters    [edge-case]
+    18. TC_013_18_Edge_AllUsersHaveData           [edge-case]
+
+  Covers: page load, total count, search (name/email/empty/special chars),
+  role filter (admin/user/all), toggle user role (both directions), user
+  detail validation, pagination, delete user flow, cancel delete modal,
+  empty state, data completeness
+
+
+================================================================================
+                    AGGREGATED TEST SUMMARY
+================================================================================
+
+  TC File                      Methods    Edge Cases    File Lines
+  --------------------------   -------    ----------    ----------
+  TC_001_LoginTest.java             4            0           170
+  TC_002_RegisterTest.java         11            0           407
+  TC_003_SymptomAnalyzerTest       28            4           586
+  TC_004_ChatTest.java             18            6           426
+  TC_005_MedicineTest.java         24            7           528
+  TC_006_HospitalTest.java         18            7           402
+  TC_007_ReportTest.java           14            5           433
+  TC_008_LoginSecurityTest.java     2            1            69
+  TC_010_OCRTest.java              20            6           575
+  TC_011_DashboardTest.java        16            5           457
+  TC_012_AdminDashboardTest        11            3           291
+  TC_013_UserManagementTest        18            4           541
+  --------------------------   -------    ----------    ----------
+  TOTAL                           184           48         4,885
+
+  + BaseClass.java utility layer                       155 lines
+  + 11 Page Object classes                           4,988 lines
+  + 2 Utility files (XLUtility, ExtentReport)
+  ==================================================================
+
+
+================================================================================
+                    EDGE CASES COVERED (48 total)
+================================================================================
+
+  TC_003 (4):
+    - Duration validation boundary (min=1, max=365, invalid 0/999)
+    - Clinical notes max 500 character limit
+    - Multiple body parts bulk selection
+    - Special characters in clinical notes
+
+  TC_004 (6):
+    - Page load (included as edge-case)
+    - Special characters in chat message
+    - Very long message (50x repeated phrase)
+    - Emoji in message
+    - Multiple quick suggestions
+    - Mobile new chat button
+
+  TC_005 (7):
+    - Page load (included as edge-case)
+    - Special characters in search
+    - Numbers-only search
+    - Very long medicine name
+    - Whitespace-only query
+    - Case sensitivity in search
+    - Search then reset and search again
+
+  TC_006 (7):
+    - Page load (included as edge-case)
+    - Special characters in search
+    - Permission denied for location
+    - Very long search query
+    - Numbers-only search
+    - Search then clear input
+    - Multiple searches in sequence
+
+  TC_007 (5):
+    - Page load (included as edge-case)
+    - Reports grid display (included as edge-case)
+    - Empty reports state
+    - All report cards have data validation
+    - Multiple symptoms displayed in cards
+
+  TC_008 (1):
+    - SQL injection in email field
+
+  TC_010 (6):
+    - Page load (included as edge-case)
+    - Empty history state
+    - Invalid file type upload
+    - File too large upload
+    - Switch tabs during upload
+    - Multiple quick uploads
+
+  TC_011 (5):
+    - Page load (included as edge-case)
+    - Stats loading state
+    - History loading state
+    - Dashboard badge displayed
+    - Stats values are numeric
+
+  TC_012 (3):
+    - Page load (included as edge-case)
+    - All KPI values non-negative
+    - Pulse events valid
+
+  TC_013 (4):
+    - Page load (included as edge-case)
+    - Empty user list state
+    - Special characters in search
+    - All users have data validation
+
+
+================================================================================
+                    TEST GROUPS
+================================================================================
+
+  Group       Description                              Test Count
+  ----------  ---------------------------------------  ----------
+  smoke       Core functionality smoke tests                19
+  regression  Full regression test suite                   165
+  edge-case   Boundary, security, and edge cases            48
+  master      BaseClass setup/teardown only                  2
+
+  Note: Tests can belong to multiple groups (e.g., a test can be both
+  smoke and regression). Totals above count unique test-to-group mappings.
+
+
+================================================================================
+                    DIRECTORY STRUCTURE
+================================================================================
+
+  MediAssistAi/
+  |-- pom.xml                         Maven project configuration
+  |-- testng.xml                      TestNG suite configuration
+  |-- test.xml                        Alternate TestNG configuration
+  |-- Test_Documentation.txt          This file
+  |
+  |-- src/
+  |   |-- main/                       (empty - no production code)
+  |   |
+  |   |-- test/
+  |       |-- java/
+  |       |   |-- pageObjects/        11 Page Object classes
+  |       |   |-- testCases/          12 TC files + BaseClass
+  |       |   |-- utilities/          XLUtility, ExtentReportManager
+  |       |
+  |       |-- resources/
+  |           |-- config.properties   App URL, credentials, config
+  |
+  |-- docs/                           Documentation files
+  |-- reports/                        Test execution reports
+  |-- scripts/                        Helper scripts
+  |-- target/                         Maven build output
+  |-- test-output/                    TestNG output (reports, index)
+  |-- testData/                       Test data files
+
+
+================================================================================
+                    KEY FRAMEWORK FEATURES
+================================================================================
+
+  1. Page Object Model (POM)
+     - Each web page has a corresponding class encapsulating its elements
+       and actions
+     - All pages extend/use WebDriver from BaseClass
+
+  2. BaseClass Utility Layer
+     - Centralized browser setup (Chrome/Edge/Firefox)
+     - Reusable login/logout with automatic retry on redirect
+     - Selenium wait helpers (visibility, URL contains)
+     - Screenshot capture on test failure
+     - Logging to ExtentReport and console
+
+  3. TestNG Annotations
+     - @BeforeMethod / @AfterMethod for setup/teardown
+     - @Test with groups (smoke, regression, edge-case)
+     - dependsOnMethods for test sequencing
+     - TestNG XML for suite configuration
+
+  4. Data-Driven via config.properties
+     - Centralized configuration (URL, credentials)
+     - Easy environment switching
+
+  5. Listeners
+     - ExtentReport for rich HTML reporting
+     - Automatic failure screenshots
+
+  6. Cross-Browser Support
+     - Chrome, Edge, and Firefox via TestNG parameter
+
+================================================================================
+                    NOTES
+================================================================================
+
+  - No TC_009 file exists (sequence jumps from TC_008 to TC_010)
+  - src/main/ is empty - this is a pure test automation project
+  - All tests follow the Arrange-Act-Assert pattern
+  - Login session is verified and automatically retried if the session
+    expires or redirects to login page
+  - Edge-case tests use TestNG group "edge-case" for targeted execution
+
+================================================================================
+                    END OF DOCUMENTATION
+================================================================================

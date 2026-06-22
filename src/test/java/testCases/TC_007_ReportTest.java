@@ -13,10 +13,25 @@ public class TC_007_ReportTest extends BaseClass {
 	@BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/reports");
     rp = new ReportPage(driver);
+
+    boolean reportsLoaded = waitForUrlContains("reports", 10);
+
+    if (!reportsLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/reports");
+        waitForUrlContains("reports", 10);
+    }
+
     rp.waitForPageLoad();
-    waitForUrlContains("reports", 10);
 }
 	// ============================================================
 	// TC_007_01 - Page Load Test

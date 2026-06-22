@@ -13,10 +13,25 @@ public class TC_010_OCRTest extends BaseClass {
 	@BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/ocr");
     ocrPage = new OCRPage(driver);
+
+    boolean ocrLoaded = waitForUrlContains("ocr", 10);
+
+    if (!ocrLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/ocr");
+        waitForUrlContains("ocr", 10);
+    }
+
     ocrPage.waitForPageLoad();
-    waitForUrlContains("ocr", 10);
 }
 
 	// ============================================================

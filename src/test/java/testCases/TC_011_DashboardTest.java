@@ -13,10 +13,25 @@ public class TC_011_DashboardTest extends BaseClass {
 	@BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/dashboard");
     dp = new DashboardPage(driver);
+
+    boolean dashboardLoaded = waitForUrlContains("dashboard", 10);
+
+    if (!dashboardLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/dashboard");
+        waitForUrlContains("dashboard", 10);
+    }
+
     dp.waitForDashboardToLoad();
-    waitForUrlContains("dashboard", 10);
 }
 
 	// ============================================================

@@ -13,10 +13,25 @@ public class TC_006_HospitalTest extends BaseClass {
 @BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/hospitals");
     hp = new HospitalPage(driver);
+
+    boolean hospitalsLoaded = waitForUrlContains("hospitals", 10);
+
+    if (!hospitalsLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/hospitals");
+        waitForUrlContains("hospitals", 10);
+    }
+
     hp.waitForPageLoad();
-    waitForUrlContains("hospitals", 10);
 }
 
 	// ============================================================

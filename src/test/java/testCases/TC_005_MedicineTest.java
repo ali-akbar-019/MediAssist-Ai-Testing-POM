@@ -13,9 +13,23 @@ public class TC_005_MedicineTest extends BaseClass {
 	@BeforeMethod
 public void loginFirst() {
     login();
+
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+    }
+
     driver.get(p.getProperty("appURL") + "/medicine");
     mp = new MedicinePage(driver);
-    waitForUrlContains("medicine", 10);
+
+    boolean medicineLoaded = waitForUrlContains("medicine", 10);
+
+    if (!medicineLoaded && driver.getCurrentUrl().contains("login")) {
+        logInfo("Redirected to login, trying to login again...");
+        login();
+        driver.get(p.getProperty("appURL") + "/medicine");
+        waitForUrlContains("medicine", 10);
+    }
 }
 
 	// ============================================================
