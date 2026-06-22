@@ -11,12 +11,31 @@ public class TC_003_SymptomAnalyzerTest extends BaseClass {
 	SymptomAnalyzerPage sap;
 
 	@BeforeMethod
-public void setupTest() {
-    login(); // This logs in and stays on dashboard
-    driver.get(p.getProperty("appURL") + "/analyzer");
-	sap = new SymptomAnalyzerPage(driver);
-    waitForUrlContains("analyzer", 10);
-}
+	public void setupTest() {
+		// Login and verify successful login
+		login();
+
+		// Wait a bit for login to complete
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
+
+		// Navigate to analyzer
+		driver.get(p.getProperty("appURL") + "/analyzer");
+		sap = new SymptomAnalyzerPage(driver);
+
+		// Wait for analyzer page - retry if redirected to login
+		boolean analyzerLoaded = waitForUrlContains("analyzer", 10);
+
+		if (!analyzerLoaded && driver.getCurrentUrl().contains("login")) {
+			logInfo("Redirected to login, trying to login again...");
+			login();
+			driver.get(p.getProperty("appURL") + "/analyzer");
+			waitForUrlContains("analyzer", 10);
+		}
+	}
+
 	// ============================================================
 	// TC_003_01 - Page Load Test
 	// ============================================================
@@ -24,9 +43,6 @@ public void setupTest() {
 	public void TC_003_01_AnalyzerPage_Loads() {
 		String testCase = "TC_003_01_AnalyzerPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		Assert.assertTrue(waitForUrlContains("analyzer", 5), "Analyzer route not reached");
 		Assert.assertTrue(sap.isHeadingVisible(), "Analyzer heading not visible");
@@ -44,7 +60,6 @@ public void setupTest() {
 		String testCase = "TC_003_02_Step1_SelectSingleBodyPart";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		sap.selectView("front");
 
 		Assert.assertEquals(sap.getSelectedBodyPartCount(), 0, "Should start with no selected parts");
@@ -64,8 +79,6 @@ public void setupTest() {
 		String testCase = "TC_003_03_Step1_SelectMultipleBodyParts";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.clickBodyPart("chest-upper-right");
 		sap.clickBodyPart("abdomen-upper");
 		sap.clickBodyPart("neck-front");
@@ -82,8 +95,6 @@ public void setupTest() {
 	public void TC_003_04_Step1_SwitchViews() {
 		String testCase = "TC_003_04_Step1_SwitchViews";
 		logInfo("TEST STARTED: " + testCase);
-
-		
 
 		sap.selectView("front");
 		sap.clickBodyPart("chest-upper-right");
@@ -107,8 +118,6 @@ public void setupTest() {
 		String testCase = "TC_003_05_Step1_RemoveBodyPart";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.clickBodyPart("neck-front");
 		int countBefore = sap.getSelectedBodyPartCount();
 
@@ -129,8 +138,6 @@ public void setupTest() {
 		String testCase = "TC_003_06_Step1_ClearAllBodyParts";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.clickBodyPart("shoulder-right-front");
 		sap.clickBodyPart("shoulder-left-front");
 		Assert.assertTrue(sap.getSelectedBodyPartCount() > 0, "Should have selected parts");
@@ -150,8 +157,6 @@ public void setupTest() {
 		String testCase = "TC_003_07_Step1_ProceedWithoutSelection_ShouldFail";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.clearAllBodyParts();
 		Assert.assertEquals(sap.getSelectedBodyPartCount(), 0, "No parts selected");
 
@@ -169,9 +174,6 @@ public void setupTest() {
 	public void TC_003_08_Step2_AddSymptom() {
 		String testCase = "TC_003_08_Step2_AddSymptom";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		// Navigate to step 2
 		sap.clickBodyPart("head-front");
@@ -194,8 +196,6 @@ public void setupTest() {
 		String testCase = "TC_003_09_Step2_AddMultipleSymptoms";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.addSymptom("Dizziness");
 		sap.addSymptom("Nausea");
 		sap.addSymptom("Blurred Vision");
@@ -215,8 +215,6 @@ public void setupTest() {
 		String testCase = "TC_003_10_Step2_AddSymptomViaSuggestion";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		Assert.assertTrue(sap.isSymptomSuggestionsVisible(), "Suggestions should be visible");
 
 		sap.addSymptomViaSuggestion("Fever");
@@ -232,8 +230,6 @@ public void setupTest() {
 	public void TC_003_11_Step2_RemoveSymptom() {
 		String testCase = "TC_003_11_Step2_RemoveSymptom";
 		logInfo("TEST STARTED: " + testCase);
-
-		
 
 		sap.addSymptom("TestSymptom");
 		Assert.assertTrue(sap.hasAddedSymptom("TestSymptom"), "Test symptom added");
@@ -251,9 +247,6 @@ public void setupTest() {
 	public void TC_003_12_Step2_ProceedWithoutSymptoms_ShouldFail() {
 		String testCase = "TC_003_12_Step2_ProceedWithoutSymptoms_ShouldFail";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		// Navigate to step 2 without adding symptoms
 		sap.clickBodyPart("head-front");
@@ -276,9 +269,6 @@ public void setupTest() {
 	public void TC_003_13_Step3_SetSeverity() {
 		String testCase = "TC_003_13_Step3_SetSeverity";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		// Navigate to step 3
 		sap.completeStep1_SelectBodyPart("head-front");
@@ -306,8 +296,6 @@ public void setupTest() {
 		String testCase = "TC_003_14_Step3_SelectPainTypes";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.selectPainType("sharp");
 		Assert.assertTrue(sap.isPainTypeSelected("sharp"), "Sharp pain should be selected");
 
@@ -326,8 +314,6 @@ public void setupTest() {
 		String testCase = "TC_003_15_Step3_SetDuration";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.setDuration("5");
 		Assert.assertEquals(sap.getDurationValue(), "5", "Duration should be 5");
 
@@ -344,8 +330,6 @@ public void setupTest() {
 	public void TC_003_16_Step3_DurationValidation_EdgeCases() {
 		String testCase = "TC_003_16_Step3_DurationValidation_EdgeCases";
 		logInfo("TEST STARTED: " + testCase);
-
-		
 
 		// Test min value
 		sap.setDuration("1");
@@ -373,8 +357,6 @@ public void setupTest() {
 		String testCase = "TC_003_17_Step3_SelectWorseAt";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		sap.selectWorseAt("morning");
 		Assert.assertTrue(sap.isWorseAtSelected("morning"), "Morning should be selected");
 
@@ -393,8 +375,6 @@ public void setupTest() {
 		String testCase = "TC_003_18_Step3_AddClinicalNotes";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		String notes = "Patient reports severe pain in the morning, worsens with activity.";
 		sap.addClinicalNotes(notes);
 		Assert.assertEquals(sap.getClinicalNotes(), notes, "Clinical notes should match");
@@ -409,9 +389,6 @@ public void setupTest() {
 	public void TC_003_19_Step3_ProceedWithoutRequiredFields_ShouldFail() {
 		String testCase = "TC_003_19_Step3_ProceedWithoutRequiredFields_ShouldFail";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		// Navigate to step 3
 		sap.completeStep1_SelectBodyPart("head-front");
@@ -435,9 +412,6 @@ public void setupTest() {
 		String testCase = "TC_003_20_Analysis_CompleteFullFlow";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-		
-
 		sap.completeFullAnalysis("head-front", "Headache", "sharp", "3", "days", "morning");
 
 		// Wait for analysis
@@ -458,8 +432,6 @@ public void setupTest() {
 		String testCase = "TC_003_21_Analysis_VerifySeverityLevels";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-
 		String severity = sap.getAnalysisSeverity();
 		Assert.assertTrue(severity.equals("emergency") || severity.equals("severe") || severity.equals("moderate")
 				|| severity.equals("mild"), "Severity should be one of: emergency, severe, moderate, mild");
@@ -474,8 +446,6 @@ public void setupTest() {
 	public void TC_003_22_Analysis_PossibleConditionsDisplayed() {
 		String testCase = "TC_003_22_Analysis_PossibleConditionsDisplayed";
 		logInfo("TEST STARTED: " + testCase);
-
-		
 
 		int conditionCount = sap.getPossibleConditionsCount();
 		Assert.assertTrue(conditionCount >= 2, "Should display at least 2 possible conditions");
@@ -493,8 +463,6 @@ public void setupTest() {
 	public void TC_003_23_Analysis_ResetAnalyzer() {
 		String testCase = "TC_003_23_Analysis_ResetAnalyzer";
 		logInfo("TEST STARTED: " + testCase);
-
-		
 
 		sap.resetAnalyzer();
 
@@ -514,9 +482,6 @@ public void setupTest() {
 		String testCase = "TC_003_24_Navigation_BackButton";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-		
-
 		sap.clickBodyPart("head-front");
 		sap.clickContinue();
 		Assert.assertTrue(sap.isStep2Displayed(), "Should be on Step 2");
@@ -535,9 +500,6 @@ public void setupTest() {
 	public void TC_003_25_Edge_ClinicalNotes_Max500Characters() {
 		String testCase = "TC_003_25_Edge_ClinicalNotes_Max500Characters";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		sap.completeStep1_SelectBodyPart("head-front");
 		sap.completeStep2_AddSymptom("Headache");
@@ -563,9 +525,6 @@ public void setupTest() {
 		String testCase = "TC_003_26_Edge_MultipleBodyPartsSelection";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-		
-
 		// Select as many parts as possible
 		String[] parts = { "head-front", "neck-front", "chest-upper-right", "chest-upper-left", "abdomen-upper",
 				"shoulder-right-front", "shoulder-left-front" };
@@ -589,9 +548,6 @@ public void setupTest() {
 		String testCase = "TC_003_27_Edge_SpecialCharactersInNotes";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-		
-
 		sap.completeStep1_SelectBodyPart("head-front");
 		sap.completeStep2_AddSymptom("Headache");
 
@@ -609,9 +565,6 @@ public void setupTest() {
 	public void TC_003_28_Analysis_EmergencyAlert() {
 		String testCase = "TC_003_28_Analysis_EmergencyAlert";
 		logInfo("TEST STARTED: " + testCase);
-
-		
-		
 
 		// Add emergency symptom
 		sap.completeStep1_SelectBodyPart("chest-upper-left");

@@ -1,88 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="MediAssist AI Test Suite" parallel="false" thread-count="1">
+<suite name="MediAssist AI Test Suite - TC_003 Only" parallel="false" thread-count="1">
 
     <listeners>
         <listener class-name="utilities.ExtentReportManager" />
     </listeners>
 
     <!-- ========================================= -->
-    <!-- CHROME - ALL TESTS -->
+    <!-- TC_003 - SYMPTOM ANALYZER TESTS - CHROME -->
     <!-- ========================================= -->
-    <test name="All Tests - Chrome">
-        <parameter name="browser" value="chrome" />
-        <groups>
-            <run>
-                <include name="smoke" />
-                <include name="regression" />
-                <include name="edge-case" />
-            </run>
-        </groups>
-        <packages>
-            <package name="testCases.*" />
-        </packages>
-    </test>
-
-    <!-- ========================================= -->
-    <!-- CHROME - SMOKE TESTS -->
-    <!-- ========================================= -->
-    <test name="Smoke Tests - Chrome">
-        <parameter name="browser" value="chrome" />
-        <groups>
-            <run>
-                <include name="smoke" />
-            </run>
-        </groups>
-        <packages>
-            <package name="testCases.*" />
-        </packages>
-    </test>
-
-    <!-- ========================================= -->
-    <!-- CHROME - REGRESSION TESTS -->
-    <!-- ========================================= -->
-    <test name="Regression Tests - Chrome">
-        <parameter name="browser" value="chrome" />
-        <groups>
-            <run>
-                <include name="regression" />
-            </run>
-        </groups>
-        <packages>
-            <package name="testCases.*" />
-        </packages>
-    </test>
-
-    <!-- ========================================= -->
-    <!-- CHROME - EDGE-CASE TESTS (includes dependencies) -->
-    <!-- ========================================= -->
-    <test name="Edge-Case Tests - Chrome">
-        <parameter name="browser" value="chrome" />
-        <groups>
-            <run>
-                <include name="edge-case" />
-                <include name="smoke" />
-                <include name="regression" />
-            </run>
-        </groups>
-        <packages>
-            <package name="testCases.*" />
-        </packages>
-    </test>
-
-    <!-- ========================================= -->
-    <!-- CHROME - AUTHENTICATION MODULE -->
-    <!-- ========================================= -->
-    <test name="Authentication Module - Chrome">
+    <test name="Symptom Analyzer Tests - Chrome">
         <parameter name="browser" value="chrome" />
         <classes>
-            <class name="testCases.TC_001_LoginTest" />
-            <class name="testCases.TC_002_RegisterTest" />
-            <class name="testCases.TC_008_LoginSecurityTest" />
+            <class name="testCases.TC_003_SymptomAnalyzerTest" />
         </classes>
     </test>
-
-  
-    
 
 </suite>

@@ -1,4 +1,3 @@
-
 package testCases;
 
 import org.testng.Assert;
@@ -19,6 +18,7 @@ public void loginFirst() {
     ump.completeFullPageLoad();
     waitForUrlContains("admin", 10);
 }
+
 	// ============================================================
 	// TC_013_01 - Page Load Test
 	// ============================================================
@@ -27,8 +27,6 @@ public void loginFirst() {
 		String testCase = "TC_013_01_UserManagementPage_Loads";
 		logInfo("TEST STARTED: " + testCase);
 
-		
-		
 		ump.completeFullPageLoad();
 
 		Assert.assertTrue(waitForUrlContains("admin", 5), "Admin route not reached");
@@ -36,8 +34,6 @@ public void loginFirst() {
 		Assert.assertTrue(ump.isHeadingVisible(), "Heading not visible");
 		Assert.assertTrue(ump.isFiltersVisible(), "Filters should be visible");
 		Assert.assertTrue(ump.isTableVisible(), "Table should be visible");
-		Assert.assertTrue(ump.isExportBtnVisible(), "Export button should be visible");
-		Assert.assertTrue(ump.isEnrollBtnVisible(), "Enroll button should be visible");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -50,7 +46,6 @@ public void loginFirst() {
 		String testCase = "TC_013_02_TotalCount_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int totalCount = ump.getTotalCount();
@@ -73,10 +68,8 @@ public void loginFirst() {
 		String testCase = "TC_013_03_Search_Functionality";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
-		// Get first user's name for search
 		int rowCount = ump.getUserRowCount();
 		if (rowCount > 0) {
 			String userName = ump.getUserName(0);
@@ -88,7 +81,6 @@ public void loginFirst() {
 			Assert.assertTrue(searchResults > 0, "Search should return at least 1 result");
 			Assert.assertTrue(ump.verifyUserExists(userName), "User should exist in search results");
 
-			// Verify search results contain the search term
 			boolean found = false;
 			for (int i = 0; i < searchResults; i++) {
 				if (ump.getUserName(i).toLowerCase().contains(userName.toLowerCase())) {
@@ -112,7 +104,6 @@ public void loginFirst() {
 		String testCase = "TC_013_04_Search_WithEmail";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -148,7 +139,6 @@ public void loginFirst() {
 		String testCase = "TC_013_05_Search_EmptyQuery";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		ump.clearSearch();
@@ -173,7 +163,6 @@ public void loginFirst() {
 		String testCase = "TC_013_06_RoleFilter_Admin";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		ump.completeRoleFilterFlow("admin");
@@ -199,7 +188,6 @@ public void loginFirst() {
 		String testCase = "TC_013_07_RoleFilter_User";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		ump.completeRoleFilterFlow("user");
@@ -225,7 +213,6 @@ public void loginFirst() {
 		String testCase = "TC_013_08_RoleFilter_All";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		ump.selectRoleFilter("all");
@@ -250,7 +237,6 @@ public void loginFirst() {
 		String testCase = "TC_013_09_ToggleUserRole";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -282,7 +268,6 @@ public void loginFirst() {
 		String testCase = "TC_013_10_ToggleUserRole_Back";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -312,7 +297,6 @@ public void loginFirst() {
 		String testCase = "TC_013_11_UserDetails_Validation";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();
@@ -321,17 +305,18 @@ public void loginFirst() {
 				String name = ump.getUserName(i);
 				String email = ump.getUserEmail(i);
 				String role = ump.getUserRole(i);
-				String createdDate = ump.getUserCreatedDate(i);
+				String joinedDate = ump.getUserJoinedDate(i);
 				String status = ump.getUserStatus(i);
 
-				logInfo("User " + (i + 1) + ": " + name + " | " + email + " | " + role + " | " + createdDate + " | "
+				logInfo("User " + (i + 1) + ": " + name + " | " + email + " | " + role + " | " + joinedDate + " | "
 						+ status);
 
 				Assert.assertFalse(name.isEmpty(), "User name should not be empty");
 				Assert.assertFalse(email.isEmpty(), "User email should not be empty");
 				Assert.assertFalse(role.isEmpty(), "User role should not be empty");
-				Assert.assertFalse(createdDate.isEmpty(), "Created date should not be empty");
-				Assert.assertEquals(status, "Linked", "User status should be 'Linked'");
+				Assert.assertFalse(joinedDate.isEmpty(), "Joined date should not be empty");
+				Assert.assertTrue(status.equals("Verified") || status.equals("Unverified"),
+						"User status should be 'Verified' or 'Unverified'");
 			}
 		} else {
 			logInfo("No users to validate");
@@ -348,7 +333,6 @@ public void loginFirst() {
 		String testCase = "TC_013_12_Pagination_Display";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int totalCount = ump.getTotalCount();
@@ -382,12 +366,10 @@ public void loginFirst() {
 		String testCase = "TC_013_13_Pagination_Navigation";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int totalCount = ump.getTotalCount();
 		if (totalCount > 10 && ump.isPaginationVisible()) {
-			// Test next navigation
 			if (!ump.isNextPageDisabled()) {
 				int beforePage = ump.getCurrentPage();
 				ump.goToNextPage();
@@ -396,7 +378,6 @@ public void loginFirst() {
 				Assert.assertTrue(ump.getUserRowCount() > 0, "Next page should have users");
 			}
 
-			// Test previous navigation
 			if (!ump.isPrevPageDisabled()) {
 				int beforePage = ump.getCurrentPage();
 				ump.goToPreviousPage();
@@ -412,55 +393,63 @@ public void loginFirst() {
 	}
 
 	// ============================================================
-	// TC_013_14 - Export Button
+	// TC_013_14 - Delete User Flow
 	// ============================================================
 	@Test(groups = { "regression" }, dependsOnMethods = { "TC_013_01_UserManagementPage_Loads" })
-	public void TC_013_14_ExportButton() {
-		String testCase = "TC_013_14_ExportButton";
+	public void TC_013_14_DeleteUser() {
+		String testCase = "TC_013_14_DeleteUser";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
-		Assert.assertTrue(ump.isExportBtnVisible(), "Export button should be visible");
+		int rowCount = ump.getUserRowCount();
+		if (rowCount > 1) { // need at least 2 users so we don't delete the only one
+			String userName = ump.getUserName(1);
+			logInfo("Attempting to delete user: " + userName);
 
-		ump.clickExportBtn();
-		logInfo("Export button clicked");
+			ump.clickDeleteUser(1);
+			Assert.assertTrue(ump.isDeleteModalVisible(), "Delete modal should appear");
 
-		// Wait for any action
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+			String modalTitle = ump.getDeleteModalTitle();
+			logInfo("Delete modal title: " + modalTitle);
+			Assert.assertFalse(modalTitle.isEmpty(), "Delete modal title should not be empty");
+
+			ump.clickDeleteModalConfirm();
+			ump.waitForDeleteConfirmation();
+
+			Assert.assertFalse(ump.verifyUserExists(userName), "Deleted user should no longer appear in table");
+		} else {
+			logInfo("Not enough users to test deletion (need > 1)");
 		}
-
-		Assert.assertTrue(ump.isPageVisible(), "Page should remain visible after export click");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
 
 	// ============================================================
-	// TC_013_15 - Enroll Button
+	// TC_013_15 - Delete Modal Cancel
 	// ============================================================
 	@Test(groups = { "regression" }, dependsOnMethods = { "TC_013_01_UserManagementPage_Loads" })
-	public void TC_013_15_EnrollButton() {
-		String testCase = "TC_013_15_EnrollButton";
+	public void TC_013_15_DeleteModal_Cancel() {
+		String testCase = "TC_013_15_DeleteModal_Cancel";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
-		Assert.assertTrue(ump.isEnrollBtnVisible(), "Enroll button should be visible");
+		int rowCount = ump.getUserRowCount();
+		if (rowCount > 0) {
+			String userName = ump.getUserName(0);
+			logInfo("User that would be deleted: " + userName);
 
-		ump.clickEnrollBtn();
-		logInfo("Enroll button clicked");
+			ump.clickDeleteUser(0);
+			Assert.assertTrue(ump.isDeleteModalVisible(), "Delete modal should appear");
 
-		// Wait for any action (modal or navigation)
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+			ump.clickDeleteModalCancel();
+			ump.waitForDeleteModalToDisappear();
+
+			Assert.assertTrue(ump.verifyUserExists(userName), "User should still exist after cancelling delete");
+		} else {
+			logInfo("No users to test cancel delete");
 		}
-
-		Assert.assertTrue(ump.isPageVisible(), "Page should remain visible after enroll click");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -473,10 +462,8 @@ public void loginFirst() {
 		String testCase = "TC_013_16_Edge_EmptyState";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
-		// Search for non-existent user
 		String randomQuery = "nonexistentuserxyz123";
 		ump.completeSearchFlow(randomQuery);
 
@@ -503,7 +490,6 @@ public void loginFirst() {
 		String testCase = "TC_013_17_Edge_SearchSpecialCharacters";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		String specialQuery = "@#$%^&*()";
@@ -512,7 +498,6 @@ public void loginFirst() {
 		int rowCount = ump.getUserRowCount();
 		logInfo("Results for special characters: " + rowCount);
 
-		// Should handle gracefully (either empty or no errors)
 		Assert.assertTrue(rowCount >= 0, "Search should handle special characters without errors");
 
 		logInfo("TEST PASSED: " + testCase);
@@ -526,7 +511,6 @@ public void loginFirst() {
 		String testCase = "TC_013_18_Edge_AllUsersHaveData";
 		logInfo("TEST STARTED: " + testCase);
 
-		
 		ump.waitForTableToLoad();
 
 		int rowCount = ump.getUserRowCount();

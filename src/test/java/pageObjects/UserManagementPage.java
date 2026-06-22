@@ -34,12 +34,6 @@ public class UserManagementPage {
 	@FindBy(css = "[data-testid='user-total-count']")
 	WebElement totalCount;
 
-	@FindBy(css = "[data-testid='user-export-btn']")
-	WebElement exportBtn;
-
-	@FindBy(css = "[data-testid='user-enroll-btn']")
-	WebElement enrollBtn;
-
 	// ================= FILTERS =================
 	@FindBy(css = "[data-testid='user-filters']")
 	WebElement filtersContainer;
@@ -47,8 +41,8 @@ public class UserManagementPage {
 	@FindBy(css = "[data-testid='user-search-input']")
 	WebElement searchInput;
 
-	@FindBy(css = "[data-testid='user-role-filter']")
-	WebElement roleFilter;
+	@FindBy(css = "[data-testid='user-role-filter'] select")
+	WebElement roleFilterSelect;
 
 	// ================= TABLE =================
 	@FindBy(css = "[data-testid='user-table-container']")
@@ -82,6 +76,19 @@ public class UserManagementPage {
 
 	@FindBy(css = "[data-testid='user-next-page']")
 	WebElement nextPageBtn;
+
+	// ================= DELETE MODAL =================
+	@FindBy(css = "[data-testid='delete-modal']")
+	WebElement deleteModal;
+
+	@FindBy(css = "[data-testid='delete-modal-title']")
+	WebElement deleteModalTitle;
+
+	@FindBy(css = "[data-testid='delete-modal-cancel']")
+	WebElement deleteModalCancel;
+
+	@FindBy(css = "[data-testid='delete-modal-confirm']")
+	WebElement deleteModalConfirm;
 
 	// ================= HEADER METHODS =================
 	public boolean isPageVisible() {
@@ -121,30 +128,6 @@ public class UserManagementPage {
 		}
 	}
 
-	public boolean isExportBtnVisible() {
-		try {
-			return exportBtn.isDisplayed();
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public void clickExportBtn() {
-		exportBtn.click();
-	}
-
-	public boolean isEnrollBtnVisible() {
-		try {
-			return enrollBtn.isDisplayed();
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public void clickEnrollBtn() {
-		enrollBtn.click();
-	}
-
 	// ================= FILTER METHODS =================
 	public boolean isFiltersVisible() {
 		try {
@@ -164,18 +147,18 @@ public class UserManagementPage {
 	}
 
 	public void selectRoleFilter(String role) {
-		Select select = new Select(roleFilter);
+		Select select = new Select(roleFilterSelect);
 		select.selectByValue(role);
 	}
 
 	public String getSelectedRole() {
-		Select select = new Select(roleFilter);
+		Select select = new Select(roleFilterSelect);
 		return select.getFirstSelectedOption().getAttribute("value");
 	}
 
 	public boolean isRoleFilterVisible() {
 		try {
-			return roleFilter.isDisplayed();
+			return roleFilterSelect.isDisplayed();
 		} catch (Exception e) {
 			return false;
 		}
@@ -239,16 +222,16 @@ public class UserManagementPage {
 
 	public String getUserRole(int index) {
 		try {
-			WebElement role = driver.findElement(By.cssSelector("[data-testid='user-role-badge-" + index + "']"));
+			WebElement role = driver.findElement(By.cssSelector("[data-testid='user-role-" + index + "']"));
 			return role.getText().replaceAll("[^a-zA-Z]", "").toLowerCase();
 		} catch (Exception e) {
 			return "";
 		}
 	}
 
-	public String getUserCreatedDate(int index) {
+	public String getUserJoinedDate(int index) {
 		try {
-			WebElement date = driver.findElement(By.cssSelector("[data-testid='user-created-" + index + "']"));
+			WebElement date = driver.findElement(By.cssSelector("[data-testid='user-joined-" + index + "']"));
 			return date.getText();
 		} catch (Exception e) {
 			return "";
@@ -264,48 +247,68 @@ public class UserManagementPage {
 		}
 	}
 
-	public String getUserAvatar(int index) {
-		try {
-			WebElement avatar = driver.findElement(By.cssSelector("[data-testid='user-avatar-" + index + "']"));
-			return avatar.getText();
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
 	// ================= USER ACTIONS =================
 	public void toggleUserRole(int index) {
 		try {
-			WebElement toggleBtn = driver.findElement(By.cssSelector("[data-testid='user-role-toggle-" + index + "']"));
+			WebElement toggleBtn = driver.findElement(By.cssSelector("[data-testid='user-toggle-role-" + index + "']"));
 			toggleBtn.click();
 			waitForTableToLoad();
 		} catch (Exception e) {
 		}
 	}
 
-	public void clickMoreOptions(int index) {
-		try {
-			WebElement moreBtn = driver.findElement(By.cssSelector("[data-testid='user-more-btn-" + index + "']"));
-			moreBtn.click();
-		} catch (Exception e) {
-		}
-	}
-
 	public boolean isRoleToggleVisible(int index) {
 		try {
-			WebElement toggleBtn = driver.findElement(By.cssSelector("[data-testid='user-role-toggle-" + index + "']"));
+			WebElement toggleBtn = driver.findElement(By.cssSelector("[data-testid='user-toggle-role-" + index + "']"));
 			return toggleBtn.isDisplayed();
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	public boolean isMoreOptionsVisible(int index) {
+	public void clickDeleteUser(int index) {
 		try {
-			WebElement moreBtn = driver.findElement(By.cssSelector("[data-testid='user-more-btn-" + index + "']"));
-			return moreBtn.isDisplayed();
+			WebElement deleteBtn = driver.findElement(By.cssSelector("[data-testid='user-delete-" + index + "']"));
+			deleteBtn.click();
+		} catch (Exception e) {
+		}
+	}
+
+	// ================= DELETE MODAL METHODS =================
+	public boolean isDeleteModalVisible() {
+		try {
+			return deleteModal.isDisplayed();
 		} catch (Exception e) {
 			return false;
+		}
+	}
+
+	public String getDeleteModalTitle() {
+		try {
+			return deleteModalTitle.getText();
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	public void clickDeleteModalCancel() {
+		try {
+			deleteModalCancel.click();
+		} catch (Exception e) {
+		}
+	}
+
+	public void clickDeleteModalConfirm() {
+		try {
+			deleteModalConfirm.click();
+		} catch (Exception e) {
+		}
+	}
+
+	public void waitForDeleteModalToDisappear() {
+		try {
+			wait.until(ExpectedConditions.invisibilityOf(deleteModal));
+		} catch (Exception e) {
 		}
 	}
 
@@ -448,6 +451,14 @@ public class UserManagementPage {
 		}
 	}
 
+	public void waitForDeleteConfirmation() {
+		try {
+			Thread.sleep(2000);
+			waitForTableToLoad();
+		} catch (InterruptedException e) {
+		}
+	}
+
 	// ================= VERIFICATION METHODS =================
 	public boolean verifyUserExists(String userName) {
 		int count = getUserRowCount();
@@ -475,7 +486,7 @@ public class UserManagementPage {
 			if (getUserName(i).isEmpty()) return false;
 			if (getUserEmail(i).isEmpty()) return false;
 			if (getUserRole(i).isEmpty()) return false;
-			if (getUserCreatedDate(i).isEmpty()) return false;
+			if (getUserJoinedDate(i).isEmpty()) return false;
 		}
 		return true;
 	}
@@ -539,5 +550,12 @@ public class UserManagementPage {
 		waitForRoleUpdate();
 		String afterRole = getUserRole(index);
 		assert !beforeRole.equals(afterRole) : "Role should have changed";
+	}
+
+	public void completeDeleteUserFlow(int index) {
+		clickDeleteUser(index);
+		assert isDeleteModalVisible() : "Delete modal should appear";
+		clickDeleteModalConfirm();
+		waitForDeleteConfirmation();
 	}
 }

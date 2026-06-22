@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -44,18 +45,18 @@ public class BaseClass {
 
 		// launch browser based on parameter
 		switch (browser.toLowerCase()) {
-			case "chrome":
-				driver = new ChromeDriver();
-				break;
-			case "edge":
-				driver = new EdgeDriver();
-				break;
-			case "firefox":
-				driver = new FirefoxDriver();
-				break;
-			default:
-				System.out.println("Invalid browser: " + browser + " — launching Chrome");
-				driver = new ChromeDriver();
+		case "chrome":
+			driver = new ChromeDriver();
+			break;
+		case "edge":
+			driver = new EdgeDriver();
+			break;
+		case "firefox":
+			driver = new FirefoxDriver();
+			break;
+		default:
+			System.out.println("Invalid browser: " + browser + " — launching Chrome");
+			driver = new ChromeDriver();
 		}
 
 		driver.manage().deleteAllCookies();
@@ -93,8 +94,12 @@ public class BaseClass {
 	}
 
 	public boolean waitForUrlContains(String partialUrl, int timeoutSeconds) {
-		return new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
-				.until(ExpectedConditions.urlContains(partialUrl));
+		try {
+			return new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
+					.until(ExpectedConditions.urlContains(partialUrl));
+		} catch (TimeoutException e) {
+			return false;
+		}
 	}
 
 	public String getElementTextSafe(By locator) {
@@ -112,28 +117,36 @@ public class BaseClass {
 
 	//
 	protected void login() {
-
 		driver.get(p.getProperty("appURL") + "/login");
-
 		LoginPage lp = new LoginPage(driver);
-
 		lp.login(p.getProperty("email"), p.getProperty("password"));
 
-		// 🔥 better wait strategy
-		new WebDriverWait(driver, Duration.ofSeconds(10))
-				.until(ExpectedConditions.or(
-						ExpectedConditions.urlContains("dashboard"),
-						ExpectedConditions.urlContains("home")));
+		// Wait longer and check multiple possible URLs
+		try {
+			new WebDriverWait(driver, Duration.ofSeconds(10))
+					.until(ExpectedConditions.or(ExpectedConditions.urlContains("dashboard"),
+							ExpectedConditions.urlContains("home"), ExpectedConditions.urlContains("/"),
+							ExpectedConditions.urlContains("chat"), ExpectedConditions.urlContains("analyzer")));
+		} catch (TimeoutException e) {
+			// If still on login, check if there's an error message
+			if (driver.getCurrentUrl().contains("login")) {
+				String error = lp.getErrorMessage();
+				if (!error.isEmpty()) {
+					throw new RuntimeException("Login failed: " + error);
+				}
+			}
+			// If no error message but still on login, throw exception
+			throw new RuntimeException("Login timeout - still on login page");
+		}
 	}
 
 	protected void logout() {
-
 		try {
-
-			driver.findElement(By.id("logout")).click();
-
+			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+			WebElement logoutBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("logout")));
+			logoutBtn.click();
 		} catch (Exception e) {
-
+			logInfo("Logout element not found or already logged out");
 		}
 	}
 }

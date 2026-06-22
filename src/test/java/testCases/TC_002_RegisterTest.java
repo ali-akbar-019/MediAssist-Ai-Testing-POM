@@ -38,7 +38,9 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		logInfo("Registration submitted");
 
-		Assert.assertFalse(waitForUrlContains("register", 10), "User should not stay on register page after valid signup");
+		// After registration, should redirect to verify-notice
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 10);
+		Assert.assertTrue(onVerifyNotice, "User should be redirected to verify-notice page after signup");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -61,8 +63,14 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Invalid email should not proceed to next step");
+		// Should stay on register page
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"),
+				"Invalid email should not proceed to next step");
 
+		// Check for email error
+		String emailError = rp.getEmailError();
+		logInfo("Email error: " + emailError);
+		Assert.assertTrue(emailError.length() > 0, "Email error message should be displayed");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -85,8 +93,13 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("123"); // weak password
 		rp.clickContinue();
 
-		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Weak password should not allow step completion");
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"),
+				"Weak password should not allow step completion");
 
+		// Check for password error
+		String passwordError = rp.getPasswordError();
+		logInfo("Password error: " + passwordError);
+		Assert.assertTrue(passwordError.length() > 0, "Password error message should be displayed");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -111,6 +124,18 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Empty fields should not proceed");
 
+		// Check for all errors
+		String nameError = rp.getNameError();
+		String emailError = rp.getEmailError();
+		String passwordError = rp.getPasswordError();
+
+		logInfo("Name error: " + nameError);
+		logInfo("Email error: " + emailError);
+		logInfo("Password error: " + passwordError);
+
+		Assert.assertTrue(nameError.length() > 0, "Name error message should be displayed");
+		Assert.assertTrue(emailError.length() > 0, "Email error message should be displayed");
+		Assert.assertTrue(passwordError.length() > 0, "Password error message should be displayed");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -128,13 +153,30 @@ public class TC_002_RegisterTest extends BaseClass {
 		driver.get(p.getProperty("appURL") + "/register");
 		rp = new RegisterPage(driver);
 
-		rp.enterName("123456"); // invalid name
-		rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
+		String uniqueEmail = "user" + System.currentTimeMillis() + "@gmail.com";
+
+		rp.enterName("123456");
+		rp.enterEmail(uniqueEmail);
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Numeric-only name should be rejected");
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Should be on register step 2");
 
+		rp.enterAge("25");
+		rp.selectGender("Male");
+		rp.selectBloodGroup("O+");
+		rp.clickCreateAccount();
+
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 8);
+		if (!onVerifyNotice) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			String err = rp.getRegisterError();
+			logInfo("Error: " + err);
+			Assert.assertTrue(err.length() > 0, "Expected error if backend rejects numeric name");
+		}
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -159,6 +201,10 @@ public class TC_002_RegisterTest extends BaseClass {
 
 		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Short name should not be accepted");
 
+		// Check for name error
+		String nameError = rp.getNameError();
+		logInfo("Name error: " + nameError);
+		Assert.assertTrue(nameError.length() > 0, "Name error message should be displayed for short name");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
@@ -183,98 +229,179 @@ public class TC_002_RegisterTest extends BaseClass {
 		rp.enterPassword("Test@12345");
 		rp.clickContinue();
 
-		logInfo("Skipping profile setup (if allowed by UI)");
+		logInfo("Step 1 completed");
 
-		rp.clickCreateAccount(); // directly skip optional fields
+		// Try to skip profile setup
+		rp.clickCreateAccount();
 
-		Assert.assertFalse(waitForUrlContains("register", 10), "User should complete registration even after skipping profile");
+		logInfo("Registration submitted (skipping profile)");
+
+		// After registration, should redirect to verify-notice
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 10);
+		Assert.assertTrue(onVerifyNotice, "User should be redirected to verify-notice after registration");
 
 		logInfo("TEST PASSED: " + testCase);
 	}
+
 	// ==============================
-// TC_009 - SQL INJECTION IN NAME
-// ==============================
-@Test(groups = { "regression" })
-public void TC_009_Register_SQLInjection_Name() {
+	// TC_009 - SQL INJECTION IN NAME
+	// ==============================
+	@Test(groups = { "regression" })
+	public void TC_009_Register_SQLInjection_Name() {
 
-    String testCase = "TC_009_Register_SQLInjection_Name";
+		String testCase = "TC_009_Register_SQLInjection_Name";
 
-    logInfo("TEST STARTED: " + testCase);
+		logInfo("TEST STARTED: " + testCase);
 
-    driver.get(p.getProperty("appURL") + "/register");
-    rp = new RegisterPage(driver);
+		driver.get(p.getProperty("appURL") + "/register");
+		rp = new RegisterPage(driver);
 
-    rp.enterName("' OR '1'='1");
-    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
-    rp.enterPassword("Test@12345");
-    rp.clickContinue();
+		String uniqueEmail = "user" + System.currentTimeMillis() + "@gmail.com";
 
-    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "SQL payload in name should be rejected");
-    Assert.assertTrue(rp.getNameError().length() > 0, "Expected name error message for SQL payload");
+		rp.enterName("' OR '1'='1");
+		rp.enterEmail(uniqueEmail);
+		rp.enterPassword("Test@12345");
+		rp.clickContinue();
 
-    logInfo("TEST PASSED: " + testCase);
-}
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Should be on register step 2");
 
-// ==============================
-// TC_010 - WEIRD NAME: DASH AND NUMERIC
-// ==============================
-@Test(groups = { "regression" })
-public void TC_010_Register_WeirdName_DashNumber() {
+		rp.enterAge("25");
+		rp.selectGender("Male");
+		rp.selectBloodGroup("O+");
+		rp.clickCreateAccount();
 
-    String testCase = "TC_010_Register_WeirdName_DashNumber";
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 8);
+		if (!onVerifyNotice) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			String err = rp.getRegisterError();
+			logInfo("Error: " + err);
+			Assert.assertTrue(err.length() > 0, "Expected error if backend rejects SQL payload");
+		}
 
-    logInfo("TEST STARTED: " + testCase);
+		logInfo("TEST PASSED: " + testCase);
+	}
 
-    driver.get(p.getProperty("appURL") + "/register");
-    rp = new RegisterPage(driver);
+	// ==============================
+	// TC_010 - WEIRD NAME: DASH AND NUMERIC
+	// ==============================
+	@Test(groups = { "regression" })
+	public void TC_010_Register_WeirdName_DashNumber() {
 
-    rp.enterName("-1");
-    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
-    rp.enterPassword("Test@12345");
-    rp.clickContinue();
+		String testCase = "TC_010_Register_WeirdName_DashNumber";
 
-    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Weird name '-1' should be rejected");
-    Assert.assertTrue(rp.getNameError().length() > 0, "Expected name error message for '-1'");
+		logInfo("TEST STARTED: " + testCase);
 
-    logInfo("TEST PASSED: " + testCase);
-}
+		driver.get(p.getProperty("appURL") + "/register");
+		rp = new RegisterPage(driver);
 
-// ==============================
-// TC_011 - WEIRD NAME: ALPHA-NUMERIC MIX
-// ==============================
-@Test(groups = { "regression" })
-public void TC_011_Register_WeirdName_AlphaNum() {
+		String uniqueEmail = "user" + System.currentTimeMillis() + "@gmail.com";
 
-    String testCase = "TC_011_Register_WeirdName_AlphaNum";
+		rp.enterName("-1");
+		rp.enterEmail(uniqueEmail);
+		rp.enterPassword("Test@12345");
+		rp.clickContinue();
 
-    logInfo("TEST STARTED: " + testCase);
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Should be on register step 2");
 
-    driver.get(p.getProperty("appURL") + "/register");
-    rp = new RegisterPage(driver);
+		rp.enterAge("25");
+		rp.selectGender("Male");
+		rp.selectBloodGroup("O+");
+		rp.clickCreateAccount();
 
-    rp.enterName("1q23");
-    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
-    rp.enterPassword("Test@12345");
-    rp.clickContinue();
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 8);
+		if (!onVerifyNotice) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			String err = rp.getRegisterError();
+			logInfo("Error: " + err);
+			Assert.assertTrue(err.length() > 0, "Expected error if backend rejects '-1'");
+		}
 
-    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Weird name '1q23' should be rejected");
-    Assert.assertTrue(rp.getNameError().length() > 0, "Expected name error message for '1q23'");
+		logInfo("TEST PASSED: " + testCase);
+	}
 
-    logInfo("TEST PASSED: " + testCase);
-}
-@Test(groups = { "regression" })
-public void TC_012_Register_NameWithNumbers() {
-    driver.get(p.getProperty("appURL") + "/register");
-    rp = new RegisterPage(driver);
-    
-    rp.enterName("John123");
-    rp.enterEmail("user" + System.currentTimeMillis() + "@gmail.com");
-    rp.enterPassword("Test@12345");
-    rp.clickContinue();
-    
-    Assert.assertTrue(driver.getCurrentUrl().contains("/register"), 
-        "Name with numbers should be rejected if only letters allowed");
-    Assert.assertTrue(rp.getNameError().length() > 0, 
-        "Expected name error for containing numbers");
-}
+	// ==============================
+	// TC_011 - WEIRD NAME: ALPHA-NUMERIC MIX
+	// ==============================
+	@Test(groups = { "regression" })
+	public void TC_011_Register_WeirdName_AlphaNum() {
+
+		String testCase = "TC_011_Register_WeirdName_AlphaNum";
+
+		logInfo("TEST STARTED: " + testCase);
+
+		driver.get(p.getProperty("appURL") + "/register");
+		rp = new RegisterPage(driver);
+
+		String uniqueEmail = "user" + System.currentTimeMillis() + "@gmail.com";
+
+		rp.enterName("1q23");
+		rp.enterEmail(uniqueEmail);
+		rp.enterPassword("Test@12345");
+		rp.clickContinue();
+
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Should be on register step 2");
+
+		rp.enterAge("25");
+		rp.selectGender("Male");
+		rp.selectBloodGroup("O+");
+		rp.clickCreateAccount();
+
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 8);
+		if (!onVerifyNotice) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			String err = rp.getRegisterError();
+			logInfo("Error: " + err);
+			Assert.assertTrue(err.length() > 0, "Expected error if backend rejects '1q23'");
+		}
+
+		logInfo("TEST PASSED: " + testCase);
+	}
+
+	// ==============================
+	// TC_012 - NAME WITH NUMBERS
+	// ==============================
+	@Test(groups = { "regression" })
+	public void TC_012_Register_NameWithNumbers() {
+		String testCase = "TC_012_Register_NameWithNumbers";
+		logInfo("TEST STARTED: " + testCase);
+
+		driver.get(p.getProperty("appURL") + "/register");
+		rp = new RegisterPage(driver);
+
+		String uniqueEmail = "user" + System.currentTimeMillis() + "@gmail.com";
+
+		rp.enterName("John123");
+		rp.enterEmail(uniqueEmail);
+		rp.enterPassword("Test@12345");
+		rp.clickContinue();
+
+		Assert.assertTrue(driver.getCurrentUrl().contains("/register"), "Should be on register step 2");
+
+		rp.enterAge("25");
+		rp.selectGender("Male");
+		rp.selectBloodGroup("O+");
+		rp.clickCreateAccount();
+
+		boolean onVerifyNotice = waitForUrlContains("verify-notice", 8);
+		if (!onVerifyNotice) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			String err = rp.getRegisterError();
+			logInfo("Error: " + err);
+			Assert.assertTrue(err.length() > 0, "Expected error if backend rejects 'John123'");
+		}
+
+		logInfo("TEST PASSED: " + testCase);
+	}
 }

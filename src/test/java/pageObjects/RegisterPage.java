@@ -107,6 +107,15 @@ public void selectBloodGroup(String bloodGroup) {
 		fillStep1(name, email, password);
 		fillStep2(age, genderXpath, bloodGroupXpath);
 	}
+	// ================= GENERAL ERROR =================
+	public String getRegisterError() {
+		try {
+			return driver.findElement(By.cssSelector("[data-testid='register-error']")).getText();
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
 	// ================= ERROR GETTERS =================
 	public String getNameError() {
 		try {

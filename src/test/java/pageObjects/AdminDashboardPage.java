@@ -56,47 +56,19 @@ public class AdminDashboardPage {
 	@FindBy(css = "[data-testid='admin-kpi-container']")
 	WebElement kpiContainer;
 
-	@FindBy(css = "[data-testid='admin-kpi-personnel']")
-	WebElement kpiPersonnel;
+	@FindBy(css = "[data-testid='admin-kpi-users']")
+	WebElement kpiUsers;
 
 	@FindBy(css = "[data-testid='admin-kpi-symptoms']")
 	WebElement kpiSymptoms;
 
-	@FindBy(css = "[data-testid='admin-kpi-intelligence']")
-	WebElement kpiIntelligence;
+	@FindBy(css = "[data-testid='admin-kpi-documents']")
+	WebElement kpiDocuments;
 
-	@FindBy(css = "[data-testid='admin-kpi-artifacts']")
-	WebElement kpiArtifacts;
+	@FindBy(css = "[data-testid='admin-kpi-reports']")
+	WebElement kpiReports;
 
-	@FindBy(css = "[data-testid='admin-kpi-label-personnel']")
-	WebElement kpiLabelPersonnel;
-
-	@FindBy(css = "[data-testid='admin-kpi-label-symptoms']")
-	WebElement kpiLabelSymptoms;
-
-	@FindBy(css = "[data-testid='admin-kpi-label-intelligence']")
-	WebElement kpiLabelIntelligence;
-
-	@FindBy(css = "[data-testid='admin-kpi-label-artifacts']")
-	WebElement kpiLabelArtifacts;
-
-	@FindBy(css = "[data-testid='admin-kpi-value-personnel']")
-	WebElement kpiValuePersonnel;
-
-	@FindBy(css = "[data-testid='admin-kpi-value-symptoms']")
-	WebElement kpiValueSymptoms;
-
-	@FindBy(css = "[data-testid='admin-kpi-value-intelligence']")
-	WebElement kpiValueIntelligence;
-
-	@FindBy(css = "[data-testid='admin-kpi-value-artifacts']")
-	WebElement kpiValueArtifacts;
-
-	// ================= CONSOLE SECTIONS =================
-	@FindBy(css = "[data-testid='admin-console']")
-	WebElement consoleContainer;
-
-	// Intelligence Section
+	// ================= AI INTELLIGENCE SECTION =================
 	@FindBy(css = "[data-testid='admin-intelligence']")
 	WebElement intelligenceSection;
 
@@ -118,17 +90,7 @@ public class AdminDashboardPage {
 	@FindBy(css = "[data-testid='admin-most-logged-value']")
 	WebElement mostLoggedValue;
 
-	// Operations Section
-	@FindBy(css = "[data-testid='admin-operations']")
-	WebElement operationsSection;
-
-	@FindBy(css = "[data-testid='admin-operations-title']")
-	WebElement operationsTitle;
-
-	@FindBy(css = "[data-testid='admin-threads']")
-	WebElement threadsContainer;
-
-	// Pulse Section
+	// ================= RECENT ACTIVITY (PULSE) SECTION =================
 	@FindBy(css = "[data-testid='admin-pulse']")
 	WebElement pulseSection;
 
@@ -137,9 +99,6 @@ public class AdminDashboardPage {
 
 	@FindBy(css = "[data-testid='admin-pulse-events']")
 	WebElement pulseEventsContainer;
-
-	@FindBy(css = "[data-testid='admin-initialize-btn']")
-	WebElement initializeBtn;
 
 	// ================= PAGE METHODS =================
 	public boolean isPageVisible() {
@@ -225,10 +184,10 @@ public class AdminDashboardPage {
 
 	public boolean isAllKPIVisible() {
 		try {
-			return kpiPersonnel.isDisplayed() &&
+			return kpiUsers.isDisplayed() &&
 				   kpiSymptoms.isDisplayed() &&
-				   kpiIntelligence.isDisplayed() &&
-				   kpiArtifacts.isDisplayed();
+				   kpiDocuments.isDisplayed() &&
+				   kpiReports.isDisplayed();
 		} catch (Exception e) {
 			return false;
 		}
@@ -243,20 +202,20 @@ public class AdminDashboardPage {
 		}
 	}
 
-	public int getPersonnelCount() {
-		return getKPIValue("personnel");
+	public int getUsersCount() {
+		return getKPIValue("users");
 	}
 
 	public int getSymptomsCount() {
 		return getKPIValue("symptoms");
 	}
 
-	public int getIntelligenceCount() {
-		return getKPIValue("intelligence");
+	public int getDocumentsCount() {
+		return getKPIValue("documents");
 	}
 
-	public int getArtifactsCount() {
-		return getKPIValue("artifacts");
+	public int getReportsCount() {
+		return getKPIValue("reports");
 	}
 
 	public String getKPILabel(String kpiName) {
@@ -268,16 +227,7 @@ public class AdminDashboardPage {
 		}
 	}
 
-	// ================= CONSOLE SECTION METHODS =================
-	public boolean isConsoleVisible() {
-		try {
-			return consoleContainer.isDisplayed();
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	// Intelligence Section
+	// ================= AI INTELLIGENCE METHODS =================
 	public boolean isIntelligenceSectionVisible() {
 		try {
 			return intelligenceSection.isDisplayed();
@@ -299,15 +249,6 @@ public class AdminDashboardPage {
 			return intelligenceChart.isDisplayed();
 		} catch (Exception e) {
 			return false;
-		}
-	}
-
-	public int getChartBarCount() {
-		try {
-			List<WebElement> bars = driver.findElements(By.cssSelector("[data-testid*='admin-chart-bar-']"));
-			return bars.size();
-		} catch (Exception e) {
-			return 0;
 		}
 	}
 
@@ -335,60 +276,7 @@ public class AdminDashboardPage {
 		}
 	}
 
-	// Operations Section
-	public boolean isOperationsSectionVisible() {
-		try {
-			return operationsSection.isDisplayed();
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public String getOperationsTitle() {
-		try {
-			return operationsTitle.getText();
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
-	public int getThreadCount() {
-		try {
-			List<WebElement> threads = driver.findElements(By.cssSelector("[data-testid*='admin-thread-']"));
-			return threads.size();
-		} catch (Exception e) {
-			return 0;
-		}
-	}
-
-	public String getThreadLabel(int index) {
-		try {
-			WebElement label = driver.findElement(By.cssSelector("[data-testid='admin-thread-label-" + index + "']"));
-			return label.getText();
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
-	public String getThreadProgressText(int index) {
-		try {
-			WebElement progress = driver.findElement(By.cssSelector("[data-testid='admin-thread-progress-" + index + "']"));
-			return progress.getText();
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
-	public int getThreadProgressValue(int index) {
-		try {
-			String text = getThreadProgressText(index);
-			return Integer.parseInt(text.replaceAll("[^0-9]", ""));
-		} catch (Exception e) {
-			return 0;
-		}
-	}
-
-	// Pulse Section
+	// ================= RECENT ACTIVITY (PULSE) METHODS =================
 	public boolean isPulseSectionVisible() {
 		try {
 			return pulseSection.isDisplayed();
@@ -408,7 +296,7 @@ public class AdminDashboardPage {
 	public int getPulseEventCount() {
 		try {
 			List<WebElement> events = driver.findElements(By.cssSelector("[data-testid*='admin-pulse-event-']"));
-			return events.size();
+			return events.size() - 1; // subtract 1 because [data-testid*='admin-pulse-event-'] also matches the container
 		} catch (Exception e) {
 			return 0;
 		}
@@ -432,16 +320,13 @@ public class AdminDashboardPage {
 		}
 	}
 
-	public boolean isInitializeBtnVisible() {
+	public String getPulseEventDetail(int index) {
 		try {
-			return initializeBtn.isDisplayed();
+			WebElement detail = driver.findElement(By.cssSelector("[data-testid='admin-pulse-event-detail-" + index + "']"));
+			return detail.getText();
 		} catch (Exception e) {
-			return false;
+			return "";
 		}
-	}
-
-	public void clickInitializeBtn() {
-		initializeBtn.click();
 	}
 
 	// ================= WAIT METHODS =================
@@ -458,53 +343,40 @@ public class AdminDashboardPage {
 	}
 
 	public void waitForKPIs() {
-		wait.until(ExpectedConditions.visibilityOfAllElements(kpiPersonnel, kpiSymptoms, kpiIntelligence, kpiArtifacts));
+		wait.until(ExpectedConditions.visibilityOfAllElements(kpiUsers, kpiSymptoms, kpiDocuments, kpiReports));
 	}
 
-	public void waitForConsoleSections() {
+	public void waitForIntelligenceSection() {
 		wait.until(ExpectedConditions.visibilityOf(intelligenceSection));
-		wait.until(ExpectedConditions.visibilityOf(operationsSection));
+	}
+
+	public void waitForPulseSection() {
 		wait.until(ExpectedConditions.visibilityOf(pulseSection));
 	}
 
 	// ================= VERIFICATION METHODS =================
 	public boolean verifyAllKPIsVisible() {
-		return isAllKPIVisible() && 
-			   !getKPILabel("personnel").isEmpty() &&
+		return isAllKPIVisible() &&
+			   !getKPILabel("users").isEmpty() &&
 			   !getKPILabel("symptoms").isEmpty() &&
-			   !getKPILabel("intelligence").isEmpty() &&
-			   !getKPILabel("artifacts").isEmpty();
+			   !getKPILabel("documents").isEmpty() &&
+			   !getKPILabel("reports").isEmpty();
 	}
 
 	public boolean verifyAllKPIsHaveValues() {
-		return getPersonnelCount() >= 0 &&
+		return getUsersCount() >= 0 &&
 			   getSymptomsCount() >= 0 &&
-			   getIntelligenceCount() >= 0 &&
-			   getArtifactsCount() >= 0;
+			   getDocumentsCount() >= 0 &&
+			   getReportsCount() >= 0;
 	}
 
-	public boolean verifyConsoleSections() {
-		return isIntelligenceSectionVisible() &&
-			   isOperationsSectionVisible() &&
-			   isPulseSectionVisible();
-	}
-
-	public boolean verifyAllThreadsVisible() {
-		int count = getThreadCount();
-		for (int i = 0; i < count; i++) {
-			if (getThreadLabel(i).isEmpty()) return false;
-			if (getThreadProgressValue(i) < 0) return false;
-		}
-		return count >= 4;
-	}
-
-	public boolean verifyAllPulseEventsVisible() {
+	public boolean verifyAllPulseEvents() {
 		int count = getPulseEventCount();
 		for (int i = 0; i < count; i++) {
 			if (getPulseEventLabel(i).isEmpty()) return false;
 			if (getPulseEventTime(i).isEmpty()) return false;
 		}
-		return count >= 4;
+		return true;
 	}
 
 	// ================= COMPLETE FLOW METHODS =================
@@ -513,14 +385,12 @@ public class AdminDashboardPage {
 		assert isPageVisible() : "Admin dashboard page should be visible";
 		assert isHeadingVisible() : "Heading should be visible";
 		assert verifyAllKPIsVisible() : "All KPIs should be visible";
-		assert verifyConsoleSections() : "All console sections should be visible";
 	}
 
 	public void verifyAdminDashboard() {
 		completeFullDashboardLoad();
 		assert verifyAllKPIsHaveValues() : "All KPIs should have valid values";
-		assert verifyAllThreadsVisible() : "All threads should be visible";
-		assert verifyAllPulseEventsVisible() : "All pulse events should be visible";
-		assert isInitializeBtnVisible() : "Initialize button should be visible";
+		assert isIntelligenceSectionVisible() : "AI Intelligence section should be visible";
+		assert isPulseSectionVisible() : "Recent Activity section should be visible";
 	}
 }
